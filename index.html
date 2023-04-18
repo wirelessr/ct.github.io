@@ -21,14 +21,14 @@
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="CT譯站">
-<meta property="og:url" content="http://wirelessr.github.io/index.html">
+<meta property="og:url" content="https://wirelessr.github.io/index.html">
 <meta property="og:site_name" content="CT譯站">
 <meta property="og:locale" content="zh_TW">
 <meta property="article:author" content="CT Wu">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="http://wirelessr.github.io/">
+<link rel="canonical" href="https://wirelessr.github.io/">
 
 
 
@@ -143,7 +143,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://wirelessr.github.io/2023/04/18/Test-Mermaid/">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/2023/04/18/Test-Mermaid/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -173,7 +173,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-04-18 14:20:02 / Modified: 14:22:23" itemprop="dateCreated datePublished" datetime="2023-04-18T14:20:02+08:00">2023-04-18</time>
+      <time title="Created: 2023-04-18 14:20:02 / Modified: 15:03:42" itemprop="dateCreated datePublished" datetime="2023-04-18T14:20:02+08:00">2023-04-18</time>
     </span>
 
   
@@ -200,10 +200,28 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>在寫文章時，我非常倚賴mermaid繪圖，因此挑theme我首重mermaid支持。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    a --&gt; b --&gt; c</span><br></pre></td></tr></table></figure>
+          <p>我很倚賴mermaid繪圖，所以我會選擇內建支援mermaid的theme，目前嘗試起來next還不錯。</p>
+<pre><code class="highlight mermaid">graph LR
+    subgraph MongoDB
+    A[Orders] --&gt;|Streaming| B(Kafka)
+    end
+    subgraph Data Lake Storage
+    B --&gt;|Streaming| C&#123;Data Lake Storage&#125;
+    end
+    subgraph Real-time Processing
+    C --&gt;|Streaming| D[Spark Structured Streaming]
+    end
+    subgraph In-Memory Database
+    D --&gt;|Query| E[Apache Ignite]
+    end
+    subgraph Reporting Platform
+    E --&gt;|Query| F(Tableau)
+    end</code></pre>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    subgraph MongoDB</span><br><span class="line">    A[Orders] --&gt;|Streaming| B(Kafka)</span><br><span class="line">    end</span><br><span class="line">    subgraph Data Lake Storage</span><br><span class="line">    B --&gt;|Streaming| C&#123;Data Lake Storage&#125;</span><br><span class="line">    end</span><br><span class="line">    subgraph Real-time Processing</span><br><span class="line">    C --&gt;|Streaming| D[Spark Structured Streaming]</span><br><span class="line">    end</span><br><span class="line">    subgraph In-Memory Database</span><br><span class="line">    D --&gt;|Query| E[Apache Ignite]</span><br><span class="line">    end</span><br><span class="line">    subgraph Reporting Platform</span><br><span class="line">    E --&gt;|Query| F(Tableau)</span><br><span class="line">    end</span><br></pre></td></tr></table></figure>
+<p>就連時序圖都畫得不錯。</p>
+<pre><code class="highlight mermaid">sequenceDiagram
+    a-&gt;&gt;b: hi
+    b-&gt;&gt;c: hello</code></pre>
 
 <p>除此之外，我還希望他能夠把code弄得好看。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># test python</span></span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;Hello Python&quot;</span></span><br></pre></td></tr></table></figure>
@@ -233,7 +251,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://wirelessr.github.io/2023/04/17/Test-Github-Action/">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/2023/04/17/Test-Github-Action/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -269,7 +287,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-18 14:22:23" itemprop="dateModified" datetime="2023-04-18T14:22:23+08:00">2023-04-18</time>
+      <time title="Modified: 2023-04-18 15:03:42" itemprop="dateModified" datetime="2023-04-18T15:03:42+08:00">2023-04-18</time>
     </span>
 
   
@@ -326,7 +344,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://wirelessr.github.io/2023/04/17/Hello-Hexo/">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/2023/04/17/Hello-Hexo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -362,7 +380,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-18 14:22:23" itemprop="dateModified" datetime="2023-04-18T14:22:23+08:00">2023-04-18</time>
+      <time title="Modified: 2023-04-18 15:03:42" itemprop="dateModified" datetime="2023-04-18T15:03:42+08:00">2023-04-18</time>
     </span>
 
   
