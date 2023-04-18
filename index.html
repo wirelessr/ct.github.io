@@ -175,7 +175,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-18 14:05:37" itemprop="dateModified" datetime="2023-04-18T14:05:37+08:00">2023-04-18</time>
+      <time title="Modified: 2023-04-18 14:17:02" itemprop="dateModified" datetime="2023-04-18T14:17:02+08:00">2023-04-18</time>
     </span>
 
   
@@ -268,7 +268,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-04-18 14:05:37" itemprop="dateModified" datetime="2023-04-18T14:05:37+08:00">2023-04-18</time>
+      <time title="Modified: 2023-04-18 14:17:02" itemprop="dateModified" datetime="2023-04-18T14:17:02+08:00">2023-04-18</time>
     </span>
 
   
@@ -297,6 +297,10 @@
     <div class="post-body" itemprop="articleBody">
           <p>有鑑於繁體中文的資源太少，我想或多或少做點翻譯，把一些有用的文章和書籍翻成中文。</p>
 <p>當然，會以我日常閱讀為主，主要是架構師、大數據相關的。</p>
+<p>在寫文章時，我非常倚賴mermaid繪圖，因此挑theme我首重mermaid支持。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    a --&gt; b --&gt; c</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">    subgraph MongoDB</span><br><span class="line">    A[Orders] --&gt;|Streaming| B(Kafka)</span><br><span class="line">    end</span><br><span class="line">    subgraph Data Lake Storage</span><br><span class="line">    B --&gt;|Streaming| C&#123;Data Lake Storage&#125;</span><br><span class="line">    end</span><br><span class="line">    subgraph Real-time Processing</span><br><span class="line">    C --&gt;|Streaming| D[Spark Structured Streaming]</span><br><span class="line">    end</span><br><span class="line">    subgraph In-Memory Database</span><br><span class="line">    D --&gt;|Query| E[Apache Ignite]</span><br><span class="line">    end</span><br><span class="line">    subgraph Reporting Platform</span><br><span class="line">    E --&gt;|Query| F(Tableau)</span><br><span class="line">    end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
       
     </div>
