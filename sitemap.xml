@@ -2,18 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://wirelessr.github.io/tags/index.html</loc>
+    <loc>https://wirelessr.github.io/hexo/Hello-Hexo-with-Next/20230419/</loc>
     
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-21</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://wirelessr.github.io/hexo/Hello-Hexo-with-Next/20230419/</loc>
+    <loc>https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/</loc>
     
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-21</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -22,7 +22,16 @@
   <url>
     <loc>https://wirelessr.github.io/categories/index.html</loc>
     
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-21</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/tags/index.html</loc>
+    
+    <lastmod>2023-04-21</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -31,17 +40,45 @@
 
   <url>
     <loc>https://wirelessr.github.io/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
+  <url>
+    <loc>https://wirelessr.github.io/tags/Shopify/</loc>
+    <lastmod>2023-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/tags/Scalability/</loc>
+    <lastmod>2023-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/tags/Availability/</loc>
+    <lastmod>2023-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
     <loc>https://wirelessr.github.io/categories/hexo/</loc>
-    <lastmod>2023-04-20</lastmod>
+    <lastmod>2023-04-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/categories/Architecture/</loc>
+    <lastmod>2023-04-21</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

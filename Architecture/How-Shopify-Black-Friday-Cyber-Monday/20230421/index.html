@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="UwHbW2CTRb9hu_gAS_JoTXH5d5V7EK1LW8M3ReqlD9c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Shopify如何處理大促？對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Shopify Black Friday Cyber Monday">
+<meta property="og:url" content="https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/index.html">
+<meta property="og:site_name" content="CT譯站">
+<meta property="og:description" content="Shopify如何處理大促？對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/articles/Screen_Shot_2018-03-02_at_2.29.48_PM.png?format=webp&v=1520019046&width=1024">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image2.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image7.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image4.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image3.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image8.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image9.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image11.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image10.png?format=webp&v=1632504929">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image1.png?format=webp&v=1632504930">
+<meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image5.png?format=webp&v=1632504930">
+<meta property="article:published_time" content="2023-04-21T01:41:46.000Z">
+<meta property="article:modified_time" content="2023-04-21T06:48:20.642Z">
+<meta property="article:author" content="CT Wu">
+<meta property="article:tag" content="Shopify">
+<meta property="article:tag" content="Scalability">
+<meta property="article:tag" content="Availability">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.shopify.com/s/files/1/0779/4361/articles/Screen_Shot_2018-03-02_at_2.29.48_PM.png?format=webp&v=1520019046&width=1024">
+
+
+<link rel="canonical" href="https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","path":"Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","title":"How Shopify Black Friday Cyber Monday"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>How Shopify Black Friday Cyber Monday | CT譯站</title>
+  
+
+
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "gqdi4dm6in");
+</script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CT譯站</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">各種軟體/架構相關文章的翻譯</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shopify%E5%A6%82%E4%BD%95%E8%99%95%E7%90%86%E5%A4%A7%E4%BF%83%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Shopify如何處理大促？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shopify-Shard-Balancing"><span class="nav-number">1.1.</span> <span class="nav-text">Shopify Shard Balancing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%AA%E9%96%93%E5%BA%97%E6%87%89%E8%A9%B2%E8%A2%AB%E6%94%BE%E5%88%B0%E5%93%AA%E5%80%8BPod%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">哪間店應該被放到哪個Pod？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E7%9B%A1%E5%8F%AF%E8%83%BD%E6%B2%92%E6%9C%89downtime%E7%9A%84%E6%83%85%E6%B3%81%E4%B8%8B%E6%90%AC%E9%81%B7%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">如何在盡可能沒有downtime的情況下搬遷？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F1%EF%BC%9A%E6%8B%B7%E8%B2%9DMySQL"><span class="nav-number">1.3.1.</span> <span class="nav-text">步驟1：拷貝MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F2%EF%BC%9A%E5%8E%9FPod%E6%96%B7%E6%B5%81"><span class="nav-number">1.3.2.</span> <span class="nav-text">步驟2：原Pod斷流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F3%EF%BC%9A%E6%9B%B4%E6%96%B0%E8%B7%AF%E7%94%B1%E3%80%81%E9%87%8D%E6%96%B0%E6%9C%8D%E5%8B%99%E3%80%81%E6%B8%85%E9%99%A4%E9%81%8E%E6%9C%9F%E6%95%B8%E6%93%9A"><span class="nav-number">1.3.3.</span> <span class="nav-text">步驟3：更新路由、重新服務、清除過期數據</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.4.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CT Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="How Shopify Black Friday Cyber Monday | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          How Shopify Black Friday Cyber Monday
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2023-04-21 09:41:46 / 修改時間：14:48:20" itemprop="dateCreated datePublished" datetime="2023-04-21T09:41:46+08:00">2023-04-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Shopify如何處理大促？"><a href="#Shopify如何處理大促？" class="headerlink" title="Shopify如何處理大促？"></a>Shopify如何處理大促？</h1><p>對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。</p>
+<p>當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。</p>
+<p>在開始談論技術細節前，我們先來看一些Shopify在<a target="_blank" rel="noopener" href="https://twitter.com/ShopifyEng/status/1597983918900510720?s=20&t=s5uyFIyqY4GwxIR71qE2Iw">2022黑色星期五的數據</a>。</p>
+<ul>
+<li>在每分鐘3 TB的egress流量下維持99.999+%的uptime。</li>
+<li>MySQL的尖峰QPS超過14M，平均也超過8.5M。</li>
+<li>尖峰時刻每秒索引16G的log。</li>
+<li>為了監控擴充性和可用性，每分鐘收集20B以上的運維指標，並且每秒儲存27G的指標資料。</li>
+<li>全站QPS為1.27M。</li>
+<li>透過<a target="_blank" rel="noopener" href="https://github.com/resque/resque">Resque</a>處理超過32B個非同步任務。</li>
+<li>傳送超過24 B個webhook。</li>
+<li>批次的資料管線總共寫入1.1T個訊息。</li>
+<li>尖峰時刻Kafka每秒處理20M個訊息。</li>
+</ul>
+<span id="more"></span>
+
+<p>很驚人的數據。</p>
+<p>接下來讓我們看看，他們能做到這種成績的其中一個機制：<a target="_blank" rel="noopener" href="https://shopify.engineering/mysql-database-shard-balancing-terabyte-scale">分片平衡(Shard Balancing)</a>。</p>
+<h2 id="Shopify-Shard-Balancing"><a href="#Shopify-Shard-Balancing" class="headerlink" title="Shopify Shard Balancing"></a>Shopify Shard Balancing</h2><p>Shopify是一個提供網店服務的SaaS公司，商家可以在Shopify輕易的建立一個屬於自己的網店。而Shopify為了應對來自各個商家的流量，因此將商家分群並為各群建立一個獨立的環境，稱為Pod(與K8s的Pod不同)。</p>
+<p>在理解Shopify的分片平衡前，首先要先知道Shopify的分片組成。</p>
+<p>根據Shopify在2018釋出來的<a target="_blank" rel="noopener" href="https://shopify.engineering/a-pods-architecture-to-allow-shopify-to-scale">技術文件</a>，我們可以知道他們將網店所需要用到的基礎架構都放進一個Pod裡，包含Cron、Redis、Memcache和MySQL。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/articles/Screen_Shot_2018-03-02_at_2.29.48_PM.png?format=webp&v=1520019046&width=1024"></p>
+<p>當店家存取自己的網店時，透過NGINX將流量轉移至正確的Pod。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image2.png?format=webp&v=1632504930"></p>
+<p>當所有店家流量都差不多時，這樣的策略可以有效的攤提全站流量，並為每個店家提供差不多的使用體驗，但若是同一個Pod內的某間店擁有超高流量，那就會產生<a href="ttps://learn.microsoft.com/en-us/azure/architecture/antipatterns/noisy-neighbor/noisy-neighbor">Noisy Neighbor</a>。</p>
+<p>因此Shopify會監控每個Pod的用量，並且根據分片策略進行再平衡(Rebalancing)。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image7.png?format=webp&v=1632504930"></p>
+<p>但這有兩個問題要解決：</p>
+<ol>
+<li>哪間店應該被放到哪個Pod？</li>
+<li>如何在盡可能沒有downtime的情況下搬遷？</li>
+</ol>
+<h2 id="哪間店應該被放到哪個Pod？"><a href="#哪間店應該被放到哪個Pod？" class="headerlink" title="哪間店應該被放到哪個Pod？"></a>哪間店應該被放到哪個Pod？</h2><p>單純用Pod內的網店數是不夠的，因為網店的流量不是一致的。Shopify會參考許多量測指標來擬定假設。</p>
+<ul>
+<li>用量</li>
+<li>店家規模</li>
+<li>GMV</li>
+<li>上次的移動時間</li>
+<li>限時搶購</li>
+<li>…等</li>
+</ul>
+<p>我們可以知道，要搬遷網店不是件簡單的事，因此需要考量的因素很多，Shopify也沒有透漏他們的營業機密。唯一可以知道的是，衡量完眾多指標後，Shopify還會跑預測模型，確定有效之後才會真的定案。</p>
+<h2 id="如何在盡可能沒有downtime的情況下搬遷？"><a href="#如何在盡可能沒有downtime的情況下搬遷？" class="headerlink" title="如何在盡可能沒有downtime的情況下搬遷？"></a>如何在盡可能沒有downtime的情況下搬遷？</h2><p>當決定要搬遷網店，以下幾點必須要確保：</p>
+<ul>
+<li>可用性：店家絕對不希望看到後端的再平衡導致網店前台無法使用。</li>
+<li>資料一致性：搬遷過程中，絕不可資料遺失毀損，並且搬遷過程中的操作不能阻塞也不能失效。</li>
+<li>吞吐量：即便是搬遷過程依然要保持合理的效能，也不能對底層造成不必要的壓力。</li>
+</ul>
+<p>為了更好解釋搬遷過程，用一個實際例子比較容易理解。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image4.png?format=webp&v=1632504930"></p>
+<p>我們希望把<em>XIAOLI’s XYLOPHONES</em>從Pod 1遷移至Pod 2。</p>
+<p>整個搬遷過程會經過三個步驟。</p>
+<ol>
+<li>拷貝MySQL。</li>
+<li>原Pod斷流</li>
+<li>更新路由、重新服務、清除過期數據</li>
+</ol>
+<h3 id="步驟1：拷貝MySQL"><a href="#步驟1：拷貝MySQL" class="headerlink" title="步驟1：拷貝MySQL"></a>步驟1：拷貝MySQL</h3><p>要執行MySQL的拷貝，Shopify使用一個自研的開源工具：<a target="_blank" rel="noopener" href="https://github.com/Shopify/ghostferry">Ghostferry</a>。</p>
+<p>拷貝MySQL分成兩個動作，批次拷貝和拼接binlog。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image3.png?format=webp&v=1632504930"></p>
+<p>首先是批次拷貝，目的是為了快速讓目標資料庫能夠跟上源資料庫。Ghostferry可以提供跨資料庫的交易(transaction)，其中，為了避免在拷貝的過程中源資料又被修改導致資料遺失或毀損，Ghostferry會使用MySQL的互斥鎖(<code>SELECT ... FOR UPDATE</code>)來阻擋更新。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image8.png?format=webp&v=1632504930"></p>
+<p>同時，拷貝的過程Ghostferry也會追蹤源資料庫的binlog並在目標資料庫重放，以確保不會有任何更新被遺漏。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image9.png?format=webp&v=1632504930"></p>
+<p>為了提昇效能，Ghostferry可以平行執行以便一次拷貝數張表，並且Ghostferry是背景執行因此不會影響網店的線上服務。</p>
+<h3 id="步驟2：原Pod斷流"><a href="#步驟2：原Pod斷流" class="headerlink" title="步驟2：原Pod斷流"></a>步驟2：原Pod斷流</h3><p>當批次拷貝結束，依然會持續複製binlog，使目標資料庫與源資料庫可以同步。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image11.png?format=webp&v=1632504930"></p>
+<p>當Ghostferry確定兩邊數據已經足夠接近，切換不會導致太大延遲的時候，就會讓源資料庫不再接受新的請求同時啟動斷流，這個網店的請求以及非同步任務無法再寫資料進源資料庫。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image10.png?format=webp&v=1632504929"></p>
+<p>會有這樣的限制是因為要完全避免資料遺失，所以必須得讓所有的寫入暫停下來。作法是在應用程式端設計一個讀寫鎖，只要寫鎖沒有上，讀鎖就可以無限拿，一旦寫鎖上了，讀鎖就會要不到。而寫鎖必須要等所有讀鎖都結束才能上。</p>
+<p>每個請求和非同步任務要執行時都會去要一個讀鎖，而遷移這個動作會去要寫鎖；只要拿到寫鎖，那所有請求和非同步任務都會暫停。若是時限內要不到寫鎖，那該次遷移就宣告失敗。</p>
+<h3 id="步驟3：更新路由、重新服務、清除過期數據"><a href="#步驟3：更新路由、重新服務、清除過期數據" class="headerlink" title="步驟3：更新路由、重新服務、清除過期數據"></a>步驟3：更新路由、重新服務、清除過期數據</h3><p>當寫鎖要到，那麼已經可以確認所有請求都暫停了，而目的端資料庫也很快就會完全同步完成，那就可以更新路由表，讓網店的流量轉移至新的Pod。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image1.png?format=webp&v=1632504930"></p>
+<p>路由表更新完成後就可以把寫鎖釋放，所有的功能都會回歸正常，只是是作用在新Pod。整個遷移過程只有極短的downtime會發生在這期間。</p>
+<p>在這個時間點，舊資料依然會儲存在源資料庫上，Shopify會啟動遷移的驗證流程，確保遷移後的網店功能正常。那麼，就可以把這些舊資料刪除。</p>
+<p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image5.png?format=webp&v=1632504930"></p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Shopify要能承受大促的極大流量，必須要兼顧擴充性以及彈性(Elasticity)，除了分片平衡之外還有許多工程解決方案，之後會再介紹其他的方案。</p>
+<p>如果不知道擴充性以及彈性怎麼區分，我建議參閱我之前寫過的文章。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://medium.com/better-programming/scalability-vs-elasticity-cfae2d7a19b">Scalability vs. Elasticity</a></li>
+</ul>
+<p>Shopify的<a target="_blank" rel="noopener" href="https://shopify.engineering/">工程部落格</a>我覺得是一個很好的學習資源，一方面是因為電商這個領域本身涵蓋的議題就包山包海，另一方面，Shopify很認真在經營自己的品牌，因此從這些技術文章中都可以看出Shopify的技術深度。</p>
+<p>未來我還會再從中挑選一些與我專業有關的技術文章出來分享。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Shopify/" rel="tag"># Shopify</a>
+              <a href="/tags/Scalability/" rel="tag"># Scalability</a>
+              <a href="/tags/Availability/" rel="tag"># Availability</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/hexo/Hello-Hexo-with-Next/20230419/" rel="prev" title="Hello Hexo with Next">
+                  <i class="fa fa-chevron-left"></i> Hello Hexo with Next
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CT Wu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"wirelessr/wirelessr.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
