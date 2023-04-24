@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Shopify如何處理大促？對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分">
+    <meta name="description" content="對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分鐘3 TB的egress流量">
 <meta property="og:type" content="article">
-<meta property="og:title" content="How Shopify Handle Black Friday Cyber Monday">
+<meta property="og:title" content="Shopify如何處理大促？">
 <meta property="og:url" content="https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/index.html">
 <meta property="og:site_name" content="CT譯站">
-<meta property="og:description" content="Shopify如何處理大促？對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分">
+<meta property="og:description" content="對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。 當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。 在開始談論技術細節前，我們先來看一些Shopify在2022黑色星期五的數據。  在每分鐘3 TB的egress流量">
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/articles/Screen_Shot_2018-03-02_at_2.29.48_PM.png?format=webp&v=1520019046&width=1024">
 <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image2.png?format=webp&v=1632504930">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image1.png?format=webp&v=1632504930">
 <meta property="og:image" content="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image5.png?format=webp&v=1632504930">
 <meta property="article:published_time" content="2023-04-21T01:41:46.000Z">
-<meta property="article:modified_time" content="2023-04-24T08:58:55.139Z">
+<meta property="article:modified_time" content="2023-04-24T09:04:50.654Z">
 <meta property="article:author" content="CT Wu">
 <meta property="article:tag" content="Shopify">
 <meta property="article:tag" content="Scalability">
@@ -52,10 +52,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","path":"Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","title":"How Shopify Handle Black Friday Cyber Monday"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","path":"Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/","title":"Shopify如何處理大促？"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>How Shopify Handle Black Friday Cyber Monday | CT譯站</title>
+<title>Shopify如何處理大促？ | CT譯站</title>
   
 
 
@@ -137,7 +137,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shopify%E5%A6%82%E4%BD%95%E8%99%95%E7%90%86%E5%A4%A7%E4%BF%83%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Shopify如何處理大促？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shopify-Shard-Balancing"><span class="nav-number">1.1.</span> <span class="nav-text">Shopify Shard Balancing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%AA%E9%96%93%E5%BA%97%E6%87%89%E8%A9%B2%E8%A2%AB%E6%94%BE%E5%88%B0%E5%93%AA%E5%80%8BPod%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">哪間店應該被放到哪個Pod？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E7%9B%A1%E5%8F%AF%E8%83%BD%E6%B2%92%E6%9C%89downtime%E7%9A%84%E6%83%85%E6%B3%81%E4%B8%8B%E6%90%AC%E9%81%B7%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">如何在盡可能沒有downtime的情況下搬遷？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F1%EF%BC%9A%E6%8B%B7%E8%B2%9DMySQL"><span class="nav-number">1.3.1.</span> <span class="nav-text">步驟1：拷貝MySQL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F2%EF%BC%9A%E5%8E%9FPod%E6%96%B7%E6%B5%81"><span class="nav-number">1.3.2.</span> <span class="nav-text">步驟2：原Pod斷流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F3%EF%BC%9A%E6%9B%B4%E6%96%B0%E8%B7%AF%E7%94%B1%E3%80%81%E9%87%8D%E6%96%B0%E6%9C%8D%E5%8B%99%E3%80%81%E6%B8%85%E9%99%A4%E9%81%8E%E6%9C%9F%E6%95%B8%E6%93%9A"><span class="nav-number">1.3.3.</span> <span class="nav-text">步驟3：更新路由、重新服務、清除過期數據</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">1.4.</span> <span class="nav-text">結論</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shopify-Shard-Balancing"><span class="nav-number">1.</span> <span class="nav-text">Shopify Shard Balancing</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%AA%E9%96%93%E5%BA%97%E6%87%89%E8%A9%B2%E8%A2%AB%E6%94%BE%E5%88%B0%E5%93%AA%E5%80%8BPod%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">哪間店應該被放到哪個Pod？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E7%9B%A1%E5%8F%AF%E8%83%BD%E6%B2%92%E6%9C%89downtime%E7%9A%84%E6%83%85%E6%B3%81%E4%B8%8B%E6%90%AC%E9%81%B7%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">如何在盡可能沒有downtime的情況下搬遷？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F1%EF%BC%9A%E6%8B%B7%E8%B2%9DMySQL"><span class="nav-number">3.1.</span> <span class="nav-text">步驟1：拷貝MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F2%EF%BC%9A%E5%8E%9FPod%E6%96%B7%E6%B5%81"><span class="nav-number">3.2.</span> <span class="nav-text">步驟2：原Pod斷流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%A9%9F3%EF%BC%9A%E6%9B%B4%E6%96%B0%E8%B7%AF%E7%94%B1%E3%80%81%E9%87%8D%E6%96%B0%E6%9C%8D%E5%8B%99%E3%80%81%E6%B8%85%E9%99%A4%E9%81%8E%E6%9C%9F%E6%95%B8%E6%93%9A"><span class="nav-number">3.3.</span> <span class="nav-text">步驟3：更新路由、重新服務、清除過期數據</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -221,12 +221,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="How Shopify Handle Black Friday Cyber Monday | CT譯站">
+      <meta itemprop="name" content="Shopify如何處理大促？ | CT譯站">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          How Shopify Handle Black Friday Cyber Monday
+          Shopify如何處理大促？
         </h1>
 
         <div class="post-meta-container">
@@ -244,7 +244,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-04-24 16:58:55" itemprop="dateModified" datetime="2023-04-24T16:58:55+08:00">2023-04-24</time>
+      <time title="修改時間：2023-04-24 17:04:50" itemprop="dateModified" datetime="2023-04-24T17:04:50+08:00">2023-04-24</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -273,7 +273,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="Shopify如何處理大促？"><a href="#Shopify如何處理大促？" class="headerlink" title="Shopify如何處理大促？"></a>Shopify如何處理大促？</h1><p>對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。</p>
+        <p>對於電商來說，大促是很重要的，無論是中文圈的1111或外語區的黑色星期五，這些大促事件基本上可以為店家帶來鉅額收益，甚至一天就佔一年GMV的兩成以上。</p>
 <p>當然，大促期間也會伴隨巨大的流量，並為電商網站帶來嚴重挑戰。因此，這篇文章我會就我看到的資訊來介紹Shopify如何應對大促事件。</p>
 <p>在開始談論技術細節前，我們先來看一些Shopify在<a target="_blank" rel="noopener" href="https://twitter.com/ShopifyEng/status/1597983918900510720?s=20&t=s5uyFIyqY4GwxIR71qE2Iw">2022黑色星期五的數據</a>。</p>
 <ul>
@@ -291,7 +291,7 @@
 
 <p>很驚人的數據。</p>
 <p>接下來讓我們看看，他們能做到這種成績的其中一個機制：<a target="_blank" rel="noopener" href="https://shopify.engineering/mysql-database-shard-balancing-terabyte-scale">分片平衡(Shard Balancing)</a>。</p>
-<h2 id="Shopify-Shard-Balancing"><a href="#Shopify-Shard-Balancing" class="headerlink" title="Shopify Shard Balancing"></a>Shopify Shard Balancing</h2><p>Shopify是一個提供網店服務的SaaS公司，商家可以在Shopify輕易的建立一個屬於自己的網店。而Shopify為了應對來自各個商家的流量，因此將商家分群並為各群建立一個獨立的環境，稱為Pod(與K8s的Pod不同)。</p>
+<h1 id="Shopify-Shard-Balancing"><a href="#Shopify-Shard-Balancing" class="headerlink" title="Shopify Shard Balancing"></a>Shopify Shard Balancing</h1><p>Shopify是一個提供網店服務的SaaS公司，商家可以在Shopify輕易的建立一個屬於自己的網店。而Shopify為了應對來自各個商家的流量，因此將商家分群並為各群建立一個獨立的環境，稱為Pod(與K8s的Pod不同)。</p>
 <p>在理解Shopify的分片平衡前，首先要先知道Shopify的分片組成。</p>
 <p>根據Shopify在2018釋出來的<a target="_blank" rel="noopener" href="https://shopify.engineering/a-pods-architecture-to-allow-shopify-to-scale">技術文件</a>，我們可以知道他們將網店所需要用到的基礎架構都放進一個Pod裡，包含Cron、Redis、Memcache和MySQL。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/articles/Screen_Shot_2018-03-02_at_2.29.48_PM.png?format=webp&v=1520019046&width=1024"></p>
@@ -305,7 +305,7 @@
 <li>哪間店應該被放到哪個Pod？</li>
 <li>如何在盡可能沒有downtime的情況下搬遷？</li>
 </ol>
-<h2 id="哪間店應該被放到哪個Pod？"><a href="#哪間店應該被放到哪個Pod？" class="headerlink" title="哪間店應該被放到哪個Pod？"></a>哪間店應該被放到哪個Pod？</h2><p>單純用Pod內的網店數是不夠的，因為網店的流量不是一致的。Shopify會參考許多量測指標來擬定假設。</p>
+<h1 id="哪間店應該被放到哪個Pod？"><a href="#哪間店應該被放到哪個Pod？" class="headerlink" title="哪間店應該被放到哪個Pod？"></a>哪間店應該被放到哪個Pod？</h1><p>單純用Pod內的網店數是不夠的，因為網店的流量不是一致的。Shopify會參考許多量測指標來擬定假設。</p>
 <ul>
 <li>用量</li>
 <li>店家規模</li>
@@ -315,7 +315,7 @@
 <li>…等</li>
 </ul>
 <p>我們可以知道，要搬遷網店不是件簡單的事，因此需要考量的因素很多，Shopify也沒有透漏他們的營業機密。唯一可以知道的是，衡量完眾多指標後，Shopify還會跑預測模型，確定有效之後才會真的定案。</p>
-<h2 id="如何在盡可能沒有downtime的情況下搬遷？"><a href="#如何在盡可能沒有downtime的情況下搬遷？" class="headerlink" title="如何在盡可能沒有downtime的情況下搬遷？"></a>如何在盡可能沒有downtime的情況下搬遷？</h2><p>當決定要搬遷網店，以下幾點必須要確保：</p>
+<h1 id="如何在盡可能沒有downtime的情況下搬遷？"><a href="#如何在盡可能沒有downtime的情況下搬遷？" class="headerlink" title="如何在盡可能沒有downtime的情況下搬遷？"></a>如何在盡可能沒有downtime的情況下搬遷？</h1><p>當決定要搬遷網店，以下幾點必須要確保：</p>
 <ul>
 <li>可用性：店家絕對不希望看到後端的再平衡導致網店前台無法使用。</li>
 <li>資料一致性：搬遷過程中，絕不可資料遺失毀損，並且搬遷過程中的操作不能阻塞也不能失效。</li>
@@ -330,7 +330,7 @@
 <li>原Pod斷流</li>
 <li>更新路由、重新服務、清除過期數據</li>
 </ol>
-<h3 id="步驟1：拷貝MySQL"><a href="#步驟1：拷貝MySQL" class="headerlink" title="步驟1：拷貝MySQL"></a>步驟1：拷貝MySQL</h3><p>要執行MySQL的拷貝，Shopify使用一個自研的開源工具：<a target="_blank" rel="noopener" href="https://github.com/Shopify/ghostferry">Ghostferry</a>。</p>
+<h2 id="步驟1：拷貝MySQL"><a href="#步驟1：拷貝MySQL" class="headerlink" title="步驟1：拷貝MySQL"></a>步驟1：拷貝MySQL</h2><p>要執行MySQL的拷貝，Shopify使用一個自研的開源工具：<a target="_blank" rel="noopener" href="https://github.com/Shopify/ghostferry">Ghostferry</a>。</p>
 <p>拷貝MySQL分成兩個動作，批次拷貝和拼接binlog。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image3.png?format=webp&v=1632504930"></p>
 <p>首先是批次拷貝，目的是為了快速讓目標資料庫能夠跟上源資料庫。Ghostferry可以提供跨資料庫的交易(transaction)，其中，為了避免在拷貝的過程中源資料又被修改導致資料遺失或毀損，Ghostferry會使用MySQL的互斥鎖(<code>SELECT ... FOR UPDATE</code>)來阻擋更新。</p>
@@ -338,18 +338,18 @@
 <p>同時，拷貝的過程Ghostferry也會追蹤源資料庫的binlog並在目標資料庫重放，以確保不會有任何更新被遺漏。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image9.png?format=webp&v=1632504930"></p>
 <p>為了提昇效能，Ghostferry可以平行執行以便一次拷貝數張表，並且Ghostferry是背景執行因此不會影響網店的線上服務。</p>
-<h3 id="步驟2：原Pod斷流"><a href="#步驟2：原Pod斷流" class="headerlink" title="步驟2：原Pod斷流"></a>步驟2：原Pod斷流</h3><p>當批次拷貝結束，依然會持續複製binlog，使目標資料庫與源資料庫可以同步。</p>
+<h2 id="步驟2：原Pod斷流"><a href="#步驟2：原Pod斷流" class="headerlink" title="步驟2：原Pod斷流"></a>步驟2：原Pod斷流</h2><p>當批次拷貝結束，依然會持續複製binlog，使目標資料庫與源資料庫可以同步。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image11.png?format=webp&v=1632504930"></p>
 <p>當Ghostferry確定兩邊數據已經足夠接近，切換不會導致太大延遲的時候，就會讓源資料庫不再接受新的請求同時啟動斷流，這個網店的請求以及非同步任務無法再寫資料進源資料庫。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image10.png?format=webp&v=1632504929"></p>
 <p>會有這樣的限制是因為要完全避免資料遺失，所以必須得讓所有的寫入暫停下來。作法是在應用程式端設計一個讀寫鎖，只要寫鎖沒有上，讀鎖就可以無限拿，一旦寫鎖上了，讀鎖就會要不到。而寫鎖必須要等所有讀鎖都結束才能上。</p>
 <p>每個請求和非同步任務要執行時都會去要一個讀鎖，而遷移這個動作會去要寫鎖；只要拿到寫鎖，那所有請求和非同步任務都會暫停。若是時限內要不到寫鎖，那該次遷移就宣告失敗。</p>
-<h3 id="步驟3：更新路由、重新服務、清除過期數據"><a href="#步驟3：更新路由、重新服務、清除過期數據" class="headerlink" title="步驟3：更新路由、重新服務、清除過期數據"></a>步驟3：更新路由、重新服務、清除過期數據</h3><p>當寫鎖要到，那麼已經可以確認所有請求都暫停了，而目的端資料庫也很快就會完全同步完成，那就可以更新路由表，讓網店的流量轉移至新的Pod。</p>
+<h2 id="步驟3：更新路由、重新服務、清除過期數據"><a href="#步驟3：更新路由、重新服務、清除過期數據" class="headerlink" title="步驟3：更新路由、重新服務、清除過期數據"></a>步驟3：更新路由、重新服務、清除過期數據</h2><p>當寫鎖要到，那麼已經可以確認所有請求都暫停了，而目的端資料庫也很快就會完全同步完成，那就可以更新路由表，讓網店的流量轉移至新的Pod。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image1.png?format=webp&v=1632504930"></p>
 <p>路由表更新完成後就可以把寫鎖釋放，所有的功能都會回歸正常，只是是作用在新Pod。整個遷移過程只有極短的downtime會發生在這期間。</p>
 <p>在這個時間點，舊資料依然會儲存在源資料庫上，Shopify會啟動遷移的驗證流程，確保遷移後的網店功能正常。那麼，就可以把這些舊資料刪除。</p>
 <p><img src="https://cdn.shopify.com/s/files/1/0779/4361/files/Shard_Balancing_image5.png?format=webp&v=1632504930"></p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>Shopify要能承受大促的極大流量，必須要兼顧擴充性以及彈性(Elasticity)，除了分片平衡之外還有許多工程解決方案，之後會再介紹其他的方案。</p>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>Shopify要能承受大促的極大流量，必須要兼顧擴充性以及彈性(Elasticity)，除了分片平衡之外還有許多工程解決方案，之後會再介紹其他的方案。</p>
 <p>如果不知道擴充性以及彈性怎麼區分，我建議參閱我之前寫過的文章。</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://medium.com/better-programming/scalability-vs-elasticity-cfae2d7a19b">Scalability vs. Elasticity</a></li>
