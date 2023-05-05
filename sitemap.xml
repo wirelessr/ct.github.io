@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://wirelessr.github.io/tags/index.html</loc>
+    
+    <lastmod>2023-05-05</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/Career/Engineering-Ladders/20230428/</loc>
+    
+    <lastmod>2023-05-05</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://wirelessr.github.io/Architecture/HTAP-learning-from-Xiaohongshu/20230505/</loc>
     
     <lastmod>2023-05-05</lastmod>
@@ -48,24 +66,6 @@
   
   <url>
     <loc>https://wirelessr.github.io/categories/index.html</loc>
-    
-    <lastmod>2023-05-05</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wirelessr.github.io/tags/index.html</loc>
-    
-    <lastmod>2023-05-05</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://wirelessr.github.io/Career/Engineering-Ladders/20230428/</loc>
     
     <lastmod>2023-05-05</lastmod>
     
