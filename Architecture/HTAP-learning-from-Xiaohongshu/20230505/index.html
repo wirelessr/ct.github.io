@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/c/c1/XiaohongshuLOGO.png">
 <meta property="article:published_time" content="2023-05-05T14:18:14.000Z">
-<meta property="article:modified_time" content="2023-05-05T14:28:33.474Z">
+<meta property="article:modified_time" content="2023-05-08T01:47:54.145Z">
 <meta property="article:author" content="CT Wu">
 <meta property="article:tag" content="TiDB">
 <meta property="article:tag" content="Architecture">
@@ -226,9 +226,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2023-05-05 22:18:14 / 修改時間：22:28:33" itemprop="dateCreated datePublished" datetime="2023-05-05T22:18:14+08:00">2023-05-05</time>
+      <time title="創建時間：2023-05-05 22:18:14" itemprop="dateCreated datePublished" datetime="2023-05-05T22:18:14+08:00">2023-05-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2023-05-08 09:47:54" itemprop="dateModified" datetime="2023-05-08T09:47:54+08:00">2023-05-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -328,7 +334,7 @@
 <p>原因在於TiDB 4.x版導入了HTAP架構，能夠讓行存引擎以及列存引擎同時存在。新加入的列存引擎稱為TiFlash，與原本的行存引擎TiKV是獨立的且不會互相干擾。當應用程式在對TiKV寫入資料時，透過Raft learner的機制很夠很快將資料同步給TiFlash，藉此讓行存與列存保持一致。</p>
 <p>另外，TiDB藉由內部的CBO，能夠在查詢進來的當下就知道這個查詢該使用行存引擎還是列存引擎並自動路由，這大幅減少應用程式的複雜度。</p>
 <p>TiDB 4.x版還有一個新機制也對整個數據架構的性能提昇起到幫助：悲觀鎖。在TiDB 3.x版時，只有樂觀鎖，在巨大資料量持續寫入的情境下，很容易發生交易間的衝突。一旦發生交易衝突，就只能在客戶端進行重試，這顯著增加應用程式的開發複雜度。但悲觀鎖可以有效解決這個問題，應用程式的錯誤處理變得更加單純。</p>
-<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>事實上，小紅書在做技術選型時也有參考過ClickHouse，而ClickHouse的性能有比TiDB更好一些。但是，ClickHouse相對難以運維。更有甚者，ClickHouse是行存引擎，在資料更新的場景下效能不佳。若是要將「更新」改寫成「添加」，一方面需要大量修改成本，另一方面需要額外的去重邏輯。</p>
+<h1 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h1><p>事實上，小紅書在做技術選型時也有參考過ClickHouse，而ClickHouse的性能有比TiDB更好一些。但是，ClickHouse相對難以運維。更有甚者，ClickHouse是列存引擎，在資料更新的場景下效能不佳。若是要將「更新」改寫成「添加」，一方面需要大量修改成本，另一方面需要額外的去重邏輯。</p>
 <p>因此，最終還是選擇TiDB。</p>
 <p>從我的觀點來看，HTAP是未來趨勢，透過合併行存引擎和列存引擎可以覆蓋各種使用場景。僅僅使用一個資料庫，就能處理大資料下的各種需求是很划算的。過去為了能夠支援各種資料產品，必須要在眾多資料庫中不斷技術選型，並仔細考量各種使用案例，一旦有了HTAP，這些複雜度都不再存在。</p>
 <p>我個人是很期待看到資料工程能夠逐漸化繁為簡。</p>
