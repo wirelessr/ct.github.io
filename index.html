@@ -217,7 +217,7 @@
       <span class="post-meta-item-text">發表於</span>
       
 
-      <time title="創建時間：2023-05-12 11:09:06 / 修改時間：11:27:28" itemprop="dateCreated datePublished" datetime="2023-05-12T11:09:06+08:00">2023-05-12</time>
+      <time title="創建時間：2023-05-12 11:09:06 / 修改時間：11:29:18" itemprop="dateCreated datePublished" datetime="2023-05-12T11:09:06+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -247,156 +247,14 @@
 <li>Replica：讀取資料的存取點，無法用來寫入資料。</li>
 </ul>
 <p>這幾個術語跟今天的三個技巧息息相關。</p>
-<p>那麼，這些元件在Elasticsearch內扮演什麼角色？</p>
-<p>讓我用一個例子來說明。假設我們有一個雙節點的Elasticsearch集群，並且擁有兩個index，分別是<code>A</code>和<code>B</code>，他們的設定如下。</p>
-<ul>
-<li><code>A</code> index<ul>
-<li>number_of_shards &#x3D; 2</li>
-<li>number_of_replicas &#x3D; 1</li>
-</ul>
-</li>
-<li><code>B</code> index<ul>
-<li>number_of_shards &#x3D; 1</li>
-<li>number_of_replicas &#x3D; 2</li>
-</ul>
-</li>
-</ul>
-<p>這些是index設定，很明確的指出要多少個shard和replica。在Elasticsearch內部則會是下面這張圖。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u((User)) --&gt; n1 &amp; n2
-    classDef colored fill:#f96
-    subgraph n1 [Node 1]
-       a1:::colored
-       ar1[a1]
-       b1:::colored
-       br1[b1]
-    end
-    subgraph n2 [Node 2]
-        a2:::colored
-        ar2[a2]
-        br2[b1]
-    end</code></pre>
-
-<p>紅色的block代表shard，而一般的block則是replica。使用者或說應用程式，會存取兩個節點來操作對應的資料。</p>
-<h2 id="Tip-1：Shard的數量應該要和節點數相同"><a href="#Tip-1：Shard的數量應該要和節點數相同" class="headerlink" title="Tip #1：Shard的數量應該要和節點數相同"></a>Tip #1：Shard的數量應該要和節點數相同</h2><p>這個技巧限定於那些很大型的index。因為我們知道，當shard的數量越多，index內的資料會越平均分散，若是每一個shard內的資料都只有一點點而且分散在許多節點，反而會造成更多搜尋負擔。</p>
-<p>根據官方建議，一個shard的資料數量應為50GB以內。</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/scalability.html#it-depends">20-40 GB</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/size-your-shards.html#shard-size-recommendation">10-50 GB</a></li>
-</ul>
-<p>為什麼會有這樣的建議？讓我們用一個反例來觀察。假設我們有很多節點，但每個index都只有一個shard。</p>
-<ul>
-<li><code>A</code> index<ul>
-<li>number_of_shards &#x3D; 1</li>
-<li>number_of_replicas &#x3D; 3</li>
-</ul>
-</li>
-</ul>
-<p>那麼使用者的讀操作會均勻分散在每個節點上，但寫操作會集中在某一個節點。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u((User))--read--&gt; n1 &amp; n2
-    u --write--&gt; n1
-    classDef colored fill:#f96
-    subgraph n1 [Node 1]
-       a1:::colored
-       ar1[a1]
-    end
-    subgraph n2 [Node 2]
-        ar12[a1]
-        ar13[a1]
-    end</code></pre>
-
-<p>在大量寫入的情境下，這樣的設定就會造成單一節點的效能瓶頸，同時也會影響在這個節點上的每個操作。</p>
-<p>在Elasticsearch 5.x版本之後開始支援<a target="_blank" rel="noopener" href="https://www.elastic.co/blog/hot-warm-architecture-in-elasticsearch-5-x">熱溫架構</a>，若是在有開啟熱溫架構的集群，那麼shard的數量應該要與熱節點的數量一致。</p>
-<h2 id="Tip-2：應該要對文件設定路由"><a href="#Tip-2：應該要對文件設定路由" class="headerlink" title="Tip #2：應該要對文件設定路由"></a>Tip #2：應該要對文件設定路由</h2><p>讓我們繼續最上面的例子，假設是一個雙節點的集群，並且index A有兩個shard以及各1個replica。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u((User)) --??--&gt; n1 &amp; n2
-    classDef colored fill:#f96
-    subgraph n1 [Node 1]
-       a1:::colored
-       ar1[a1]
-    end
-    subgraph n2 [Node 2]
-        a2:::colored
-        ar2[a2]
-    end</code></pre>
-
-<p>當使用者要寫入一個文件時，他會寫到哪個節點？</p>
-<p>這會根據Elasticsearch的內建路由規則來決定，簡單的說，公式如下。</p>
-<blockquote>
-<p><code>shard = hash(_id) % number_of_shards</code></p>
-</blockquote>
-<p><code>_id</code>是Elasticsearch自動派發的，當然也可以由使用者自行指定。至於hash的演算法則是<code>murmur3</code>，不是一致性雜湊，所以會算出一個特定的shard。</p>
-<p>所以，最糟糕的情況會像是下面這張圖。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u1((User 1)) --bulk--&gt; n1 &amp; n2
-    u2((User 2)) --search--&gt; n1 &amp; n2
-    classDef colored fill:#f96
-    subgraph n1 [Node 1]
-       a1:::colored
-       ar1[a1]
-    end
-    subgraph n2 [Node 2]
-        a2:::colored
-        ar2[a2]
-    end</code></pre>
-
-<p>當有一個使用者開始進行批量操作，把大量的文件寫入集群內，同時，有一個使用在進行搜尋，那麼，這兩個使用者的操作就會互相干擾。</p>
-<p>若是有一個辦法讓單一使用者的資料只會存放在單一節點，那麼就可以有效的避免上述案例。頂多某個使用者在大量寫入時，自己的搜尋效能被影響而已。這樣的作法稱為客製化路由。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u1((User 1)) --bulk--&gt; n1
-    u2((User 2)) --search--&gt; n2
-    classDef colored fill:#f96
-    subgraph n1 [Node 1]
-       a1:::colored
-       ar1[a1]
-    end
-    subgraph n2 [Node 2]
-        a2:::colored
-        ar2[a2]
-    end</code></pre>
-
-<p>Elasticsearch是可以讓讀寫操作加入一個<code>routing</code>參數，這樣剛才提到的公式就會變成：</p>
-<blockquote>
-<p>shard &#x3D; hash(routing) % number_of_shards</p>
-</blockquote>
-<h2 id="Tip-3：大量寫入時應該關閉replica和refresh"><a href="#Tip-3：大量寫入時應該關閉replica和refresh" class="headerlink" title="Tip #3：大量寫入時應該關閉replica和refresh"></a>Tip #3：大量寫入時應該關閉<code>replica</code>和<code>refresh</code></h2><p>在進行大量寫入時，先暫停複製以減少資源消耗，等大量寫入完成後再開啟副本複製。這樣的作法可以大幅降低寫入的消耗並提昇整個集群的效能。</p>
-<p>關閉<code>replica</code>算是容易理解，那關閉<code>refresh</code>又是怎麼回事？</p>
-<p>在解釋之前，讓我們先來了解<code>refresh</code>的機制。</p>
-<pre><code class="highlight mermaid">flowchart LR
-    u((User)) --write--&gt; buf[[Mem buffer]]
-    
-    subgraph Shard
-        buf --refresh--&gt; fs[(Lucene)]
-    end
-    
-    u --search--&gt; fs</code></pre>
-
-<p>當使用者對shard寫入資料時，首先會先寫入記憶體緩衝內，這時候的資料對於搜尋操作來說是不可見的。接著，Elasticsearch會將記憶體緩衝內的資料透過<code>refresh</code>寫入硬碟，並轉換成<code>Lucene</code>的形式，這時候才真的能夠搜尋。</p>
-<p><code>refresh</code>有兩種形式。</p>
-<ol>
-<li>Index設定內的<code>refresh_interval</code>，時間到了會自動觸發<code>refresh</code></li>
-<li>顯式調用Refresh API</li>
-</ol>
-<p>在大量寫入時，我們本來就不會主動調用Refresh API，因此這裡提到的關閉是指將<code>refresh_interval</code>調長甚至關閉。</p>
-<p>當然，無論是關閉<code>replica</code>或關閉<code>refresh</code>都是為了減少資源消耗以便讓全部的資源都投入到處理大量寫入。</p>
-<p>那麼，你也許會問，關閉<code>refresh</code>難道不會導致資料遺失嗎？</p>
-<p>不，不會。</p>
-<p>原因在於，Elasticsearch的持久化模型不僅僅只依賴<code>refresh</code>。讓我們再深入一點。</p>
-<pre><code class="highlight mermaid">flowchart TD
-    u((User)) --&gt; Shard
-    subgraph Shard
-        buf[[Mem buffer]] --refresh--&gt; fs[(Lucene)] --flush--&gt; disk[Disk]
-        log[[Trans log]] --disater recovery--&gt; disk
-    end</code></pre>
-
-<p>從上面的圖我們可以發現，即便是從記憶體暫存寫入硬碟的過程也還沒真正落入硬碟，還需要經過<code>flush</code>才會真的被持久化。但這樣的路徑很長，對於資料庫來說完全不可靠，因此實際上在寫入資料時會同時寫到兩個地方：記憶體暫存以及交易記錄。</p>
-<p>一旦發生災難，還是可以透過交易記錄來回復整個寫入的資料集。但這樣當然有代價，少了一道保險機制，若是交易記錄損毀，就真的會資料遺失了。但我相信這機率絕對是低的多了，而且損失的也只是這次大量寫入的資料而已。</p>
-<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這次介紹了三種方法能夠讓Elasticsearch集群的效能獲得顯著提昇。</p>
-<p>我必須說，在大資料領域下，光會使用各種資料儲存明顯是不夠的。若是不深入了解資料儲存的底層實作，那麼就極有可能發生資源浪費。這不僅僅會造成集群效能低落，更可能會造成硬體成本上升，因為要用更多硬體來解決這些負擔。</p>
-<p>在這篇文章中，我們先簡單解釋了Elasticsearch背後的幾個名詞，接著透過這些知識進一步了解相關的優化技巧，我相信，透過這樣的流程你們也許可以挖掘出更多細節。</p>
-<p>若是有什麼好用秘訣，也歡迎與我分享。</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -458,7 +316,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-05-12 11:27:28" itemprop="dateModified" datetime="2023-05-12T11:27:28+08:00">2023-05-12</time>
+      <time title="修改時間：2023-05-12 11:29:18" itemprop="dateModified" datetime="2023-05-12T11:29:18+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -555,7 +413,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-05-12 11:27:28" itemprop="dateModified" datetime="2023-05-12T11:27:28+08:00">2023-05-12</time>
+      <time title="修改時間：2023-05-12 11:29:18" itemprop="dateModified" datetime="2023-05-12T11:29:18+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -658,7 +516,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-05-12 11:27:28" itemprop="dateModified" datetime="2023-05-12T11:27:28+08:00">2023-05-12</time>
+      <time title="修改時間：2023-05-12 11:29:18" itemprop="dateModified" datetime="2023-05-12T11:29:18+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -757,7 +615,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-05-12 11:27:28" itemprop="dateModified" datetime="2023-05-12T11:27:28+08:00">2023-05-12</time>
+      <time title="修改時間：2023-05-12 11:29:18" itemprop="dateModified" datetime="2023-05-12T11:29:18+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -862,7 +720,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-05-12 11:27:28" itemprop="dateModified" datetime="2023-05-12T11:27:28+08:00">2023-05-12</time>
+      <time title="修改時間：2023-05-12 11:29:18" itemprop="dateModified" datetime="2023-05-12T11:29:18+08:00">2023-05-12</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
