@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="UwHbW2CTRb9hu_gAS_JoTXH5d5V7EK1LW8M3ReqlD9c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="這篇文章會從Elasticsearch的底層實作解釋應用程式要怎麼做會更好，但我不打算使用很晦澀的方式來描述太深入的細節，因此我會盡量使用簡化過的流程來說明。 在開始之前讓我們先來了解Elasticsearch幾個重要的術語。  Index：這就像是RDBMS的table或是MongoDB的collection，不要和RDBMS的index混淆了。 Shard(或稱Primary Shard)：資">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有效提昇elasticsearch整座集群效能的三個小技巧">
+<meta property="og:url" content="https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/index.html">
+<meta property="og:site_name" content="CT譯站">
+<meta property="og:description" content="這篇文章會從Elasticsearch的底層實作解釋應用程式要怎麼做會更好，但我不打算使用很晦澀的方式來描述太深入的細節，因此我會盡量使用簡化過的流程來說明。 在開始之前讓我們先來了解Elasticsearch幾個重要的術語。  Index：這就像是RDBMS的table或是MongoDB的collection，不要和RDBMS的index混淆了。 Shard(或稱Primary Shard)：資">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2023-05-12T03:09:06.000Z">
+<meta property="article:modified_time" content="2023-05-12T03:22:39.994Z">
+<meta property="article:author" content="CT Wu">
+<meta property="article:tag" content="Architecture">
+<meta property="article:tag" content="Elasticsearch">
+<meta property="article:tag" content="Performance">
+<meta property="article:tag" content="Database">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/","path":"Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/","title":"有效提昇elasticsearch整座集群效能的三個小技巧"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>有效提昇elasticsearch整座集群效能的三個小技巧 | CT譯站</title>
+  
+
+
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "gqdi4dm6in");
+</script>
+
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9820460770755862"
+     crossorigin="anonymous"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CT譯站</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">各種軟體/架構相關文章的翻譯</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tip-1%EF%BC%9AShard%E7%9A%84%E6%95%B8%E9%87%8F%E6%87%89%E8%A9%B2%E8%A6%81%E5%92%8C%E7%AF%80%E9%BB%9E%E6%95%B8%E7%9B%B8%E5%90%8C"><span class="nav-number">1.</span> <span class="nav-text">Tip #1：Shard的數量應該要和節點數相同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tip-2%EF%BC%9A%E6%87%89%E8%A9%B2%E8%A6%81%E5%B0%8D%E6%96%87%E4%BB%B6%E8%A8%AD%E5%AE%9A%E8%B7%AF%E7%94%B1"><span class="nav-number">2.</span> <span class="nav-text">Tip #2：應該要對文件設定路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tip-3%EF%BC%9A%E5%A4%A7%E9%87%8F%E5%AF%AB%E5%85%A5%E6%99%82%E6%87%89%E8%A9%B2%E9%97%9C%E9%96%89replica%E5%92%8Crefresh"><span class="nav-number">3.</span> <span class="nav-text">Tip #3：大量寫入時應該關閉replica和refresh</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B5%90%E8%AB%96"><span class="nav-number">4.</span> <span class="nav-text">結論</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CT Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wirelessr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wirelessr" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://medium.com/@lazypro" title="https:&#x2F;&#x2F;medium.com&#x2F;@lazypro" rel="noopener" target="_blank">Medium</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://ithelp.ithome.com.tw/users/20146414/ironman" title="https:&#x2F;&#x2F;ithelp.ithome.com.tw&#x2F;users&#x2F;20146414&#x2F;ironman" rel="noopener" target="_blank">iThome</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="有效提昇elasticsearch整座集群效能的三個小技巧 | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          有效提昇elasticsearch整座集群效能的三個小技巧
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2023-05-12 11:09:06 / 修改時間：11:22:39" itemprop="dateCreated datePublished" datetime="2023-05-12T11:09:06+08:00">2023-05-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Elasticsearch/" itemprop="url" rel="index"><span itemprop="name">Elasticsearch</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>這篇文章會從Elasticsearch的底層實作解釋應用程式要怎麼做會更好，但我不打算使用很晦澀的方式來描述太深入的細節，因此我會盡量使用簡化過的流程來說明。</p>
+<p>在開始之前讓我們先來了解Elasticsearch幾個重要的術語。</p>
+<ul>
+<li>Index：這就像是RDBMS的table或是MongoDB的collection，不要和RDBMS的index混淆了。</li>
+<li>Shard(或稱Primary Shard)：資料要寫入index的存取點，當然也能夠讀取資料。</li>
+<li>Replica：讀取資料的存取點，無法用來寫入資料。</li>
+</ul>
+<p>這幾個術語跟今天的三個技巧息息相關。</p>
+<p>那麼，這些元件在Elasticsearch內扮演什麼角色？</p>
+<p>讓我用一個例子來說明。假設我們有一個雙節點的Elasticsearch集群，並且擁有兩個index，分別是<code>A</code>和<code>B</code>，他們的設定如下。</p>
+<ul>
+<li><code>A</code> index<ul>
+<li>number_of_shards &#x3D; 2</li>
+<li>number_of_replicas &#x3D; 1</li>
+</ul>
+</li>
+<li><code>B</code> index<ul>
+<li>number_of_shards &#x3D; 1</li>
+<li>number_of_replicas &#x3D; 2</li>
+</ul>
+</li>
+</ul>
+<p>這些是index設定，很明確的指出要多少個shard和replica。在Elasticsearch內部則會是下面這張圖。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u((User)) --&gt; n1 &amp; n2
+    classDef colored fill:#f96
+    subgraph n1 [Node 1]
+       a1:::colored
+       ar1[a1]
+       b1:::colored
+       br1[b1]
+    end
+    subgraph n2 [Node 2]
+        a2:::colored
+        ar2[a2]
+        br2[b1]
+    end</code></pre>
+
+<p>紅色的block代表shard，而一般的block則是replica。使用者或說應用程式，會存取兩個節點來操作對應的資料。</p>
+<h2 id="Tip-1：Shard的數量應該要和節點數相同"><a href="#Tip-1：Shard的數量應該要和節點數相同" class="headerlink" title="Tip #1：Shard的數量應該要和節點數相同"></a>Tip #1：Shard的數量應該要和節點數相同</h2><p>這個技巧限定於那些很大型的index。因為我們知道，當shard的數量越多，index內的資料會越平均分散，若是每一個shard內的資料都只有一點點而且分散在許多節點，反而會造成更多搜尋負擔。</p>
+<p>根據官方建議，一個shard的資料數量應為50GB以內。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/scalability.html#it-depends">20-40 GB</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/size-your-shards.html#shard-size-recommendation">10-50 GB</a></li>
+</ul>
+<p>為什麼會有這樣的建議？讓我們用一個反例來觀察。假設我們有很多節點，但每個index都只有一個shard。</p>
+<ul>
+<li><code>A</code> index<ul>
+<li>number_of_shards &#x3D; 1</li>
+<li>number_of_replicas &#x3D; 3</li>
+</ul>
+</li>
+</ul>
+<p>那麼使用者的讀操作會均勻分散在每個節點上，但寫操作會集中在某一個節點。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u((User))--read--&gt; n1 &amp; n2
+    u --write--&gt; n1
+    classDef colored fill:#f96
+    subgraph n1 [Node 1]
+       a1:::colored
+       ar1[a1]
+    end
+    subgraph n2 [Node 2]
+        ar12[a1]
+        ar13[a1]
+    end</code></pre>
+
+<p>在大量寫入的情境下，這樣的設定就會造成單一節點的效能瓶頸，同時也會影響在這個節點上的每個操作。</p>
+<p>在Elasticsearch 5.x版本之後開始支援<a target="_blank" rel="noopener" href="https://www.elastic.co/blog/hot-warm-architecture-in-elasticsearch-5-x">熱溫架構</a>，若是在有開啟熱溫架構的集群，那麼shard的數量應該要與熱節點的數量一致。</p>
+<h2 id="Tip-2：應該要對文件設定路由"><a href="#Tip-2：應該要對文件設定路由" class="headerlink" title="Tip #2：應該要對文件設定路由"></a>Tip #2：應該要對文件設定路由</h2><p>讓我們繼續最上面的例子，假設是一個雙節點的集群，並且index A有兩個shard以及各1個replica。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u((User)) --??--&gt; n1 &amp; n2
+    classDef colored fill:#f96
+    subgraph n1 [Node 1]
+       a1:::colored
+       ar1[a1]
+    end
+    subgraph n2 [Node 2]
+        a2:::colored
+        ar2[a2]
+    end</code></pre>
+
+<p>當使用者要寫入一個文件時，他會寫到哪個節點？</p>
+<p>這會根據Elasticsearch的內建路由規則來決定，簡單的說，公式如下。</p>
+<blockquote>
+<p><code>shard = hash(_id) % number_of_shards</code></p>
+</blockquote>
+<p><code>_id</code>是Elasticsearch自動派發的，當然也可以由使用者自行指定。至於hash的演算法則是<code>murmur3</code>，不是一致性雜湊，所以會算出一個特定的shard。</p>
+<p>所以，最糟糕的情況會像是下面這張圖。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u1((User 1)) --bulk--&gt; n1 &amp; n2
+    u2((User 2)) --search--&gt; n1 &amp; n2
+    classDef colored fill:#f96
+    subgraph n1 [Node 1]
+       a1:::colored
+       ar1[a1]
+    end
+    subgraph n2 [Node 2]
+        a2:::colored
+        ar2[a2]
+    end</code></pre>
+
+<p>當有一個使用者開始進行批量操作，把大量的文件寫入集群內，同時，有一個使用在進行搜尋，那麼，這兩個使用者的操作就會互相干擾。</p>
+<p>若是有一個辦法讓單一使用者的資料只會存放在單一節點，那麼就可以有效的避免上述案例。頂多某個使用者在大量寫入時，自己的搜尋效能被影響而已。這樣的作法稱為客製化路由。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u1((User 1)) --bulk--&gt; n1
+    u2((User 2)) --search--&gt; n2
+    classDef colored fill:#f96
+    subgraph n1 [Node 1]
+       a1:::colored
+       ar1[a1]
+    end
+    subgraph n2 [Node 2]
+        a2:::colored
+        ar2[a2]
+    end</code></pre>
+
+<p>Elasticsearch是可以讓讀寫操作加入一個<code>routing</code>參數，這樣剛才提到的公式就會變成：</p>
+<blockquote>
+<p>shard &#x3D; hash(routing) % number_of_shards</p>
+</blockquote>
+<h2 id="Tip-3：大量寫入時應該關閉replica和refresh"><a href="#Tip-3：大量寫入時應該關閉replica和refresh" class="headerlink" title="Tip #3：大量寫入時應該關閉replica和refresh"></a>Tip #3：大量寫入時應該關閉<code>replica</code>和<code>refresh</code></h2><p>在進行大量寫入時，先暫停複製以減少資源消耗，等大量寫入完成後再開啟副本複製。這樣的作法可以大幅降低寫入的消耗並提昇整個集群的效能。</p>
+<p>關閉<code>replica</code>算是容易理解，那關閉<code>refresh</code>又是怎麼回事？</p>
+<p>在解釋之前，讓我們先來了解<code>refresh</code>的機制。</p>
+<pre><code class="highlight mermaid">flowchart LR
+    u((User)) --write--&gt; buf[[Mem buffer]]
+    
+    subgraph Shard
+        buf --refresh--&gt; fs[(Lucene)]
+    end
+    
+    u --search--&gt; fs</code></pre>
+
+<p>當使用者對shard寫入資料時，首先會先寫入記憶體緩衝內，這時候的資料對於搜尋操作來說是不可見的。接著，Elasticsearch會將記憶體緩衝內的資料透過<code>refresh</code>寫入硬碟，並轉換成<code>Lucene</code>的形式，這時候才真的能夠搜尋。</p>
+<p><code>refresh</code>有兩種形式。</p>
+<ol>
+<li>Index設定內的<code>refresh_interval</code>，時間到了會自動觸發<code>refresh</code></li>
+<li>顯式調用Refresh API</li>
+</ol>
+<p>在大量寫入時，我們本來就不會主動調用Refresh API，因此這裡提到的關閉是指將<code>refresh_interval</code>調長甚至關閉。</p>
+<p>當然，無論是關閉<code>replica</code>或關閉<code>refresh</code>都是為了減少資源消耗以便讓全部的資源都投入到處理大量寫入。</p>
+<p>那麼，你也許會問，關閉<code>refresh</code>難道不會導致資料遺失嗎？</p>
+<p>不，不會。</p>
+<p>原因在於，Elasticsearch的持久化模型不僅僅只依賴<code>refresh</code>。讓我們再深入一點。</p>
+<pre><code class="highlight mermaid">flowchart TD
+    u((User)) --&gt; Shard
+    subgraph Shard
+        buf[[Mem buffer]] --refresh--&gt; fs[(Lucene)] --flush--&gt; disk[Disk]
+        log[[Trans log]] --disater recovery--&gt; disk
+    end</code></pre>
+
+<p>從上面的圖我們可以發現，即便是從記憶體暫存寫入硬碟的過程也還沒真正落入硬碟，還需要經過<code>flush</code>才會真的被持久化。但這樣的路徑很長，對於資料庫來說完全不可靠，因此實際上在寫入資料時會同時寫到兩個地方：記憶體暫存以及交易記錄。</p>
+<p>一旦發生災難，還是可以透過交易記錄來回復整個寫入的資料集。但這樣當然有代價，少了一道保險機制，若是交易記錄損毀，就真的會資料遺失了。但我相信這機率絕對是低的多了，而且損失的也只是這次大量寫入的資料而已。</p>
+<h2 id="結論"><a href="#結論" class="headerlink" title="結論"></a>結論</h2><p>這次介紹了三種方法能夠讓Elasticsearch集群的效能獲得顯著提昇。</p>
+<p>我必須說，在大資料領域下，光會使用各種資料儲存明顯是不夠的。若是不深入了解資料儲存的底層實作，那麼就極有可能發生資源浪費。這不僅僅會造成集群效能低落，更可能會造成硬體成本上升，因為要用更多硬體來解決這些負擔。</p>
+<p>在這篇文章中，我們先簡單解釋了Elasticsearch背後的幾個名詞，接著透過這些知識進一步了解相關的優化技巧，我相信，透過這樣的流程你們也許可以挖掘出更多細節。</p>
+<p>若是有什麼好用秘訣，也歡迎與我分享。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+    <!-- related posts -->
+        <h2>相關文章推薦</h2>
+        <ul class="popular-posts">
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/HTAP-learning-from-Xiaohongshu/20230505/" rel="bookmark">HTAP：從小紅書的案例學習NewSQL</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/" rel="bookmark">Shopify如何處理大促？</a></div>
+            </li>
+        </ul>
+
+          <div class="post-tags">
+              <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+              <a href="/tags/Elasticsearch/" rel="tag"># Elasticsearch</a>
+              <a href="/tags/Performance/" rel="tag"># Performance</a>
+              <a href="/tags/Database/" rel="tag"># Database</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Architecture/HTAP-learning-from-Xiaohongshu/20230505/" rel="prev" title="HTAP：從小紅書的案例學習NewSQL">
+                  <i class="fa fa-chevron-left"></i> HTAP：從小紅書的案例學習NewSQL
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CT Wu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"wirelessr/wirelessr.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
