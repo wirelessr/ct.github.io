@@ -4,7 +4,7 @@
   <url>
     <loc>https://wirelessr.github.io/tags/index.html</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -13,7 +13,7 @@
   <url>
     <loc>https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -22,7 +22,7 @@
   <url>
     <loc>https://wirelessr.github.io/Career/Engineering-Ladders/20230428/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -31,7 +31,7 @@
   <url>
     <loc>https://wirelessr.github.io/Architecture/HTAP-learning-from-Xiaohongshu/20230505/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -40,7 +40,7 @@
   <url>
     <loc>https://wirelessr.github.io/hexo/Hello-Hexo-with-Next/20230419/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -49,7 +49,16 @@
   <url>
     <loc>https://wirelessr.github.io/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/</loc>
+    
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -58,7 +67,7 @@
   <url>
     <loc>https://wirelessr.github.io/Career/What-is-Staff-Engineer/20230425/</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -67,7 +76,7 @@
   <url>
     <loc>https://wirelessr.github.io/about/index.html</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -76,7 +85,7 @@
   <url>
     <loc>https://wirelessr.github.io/categories/index.html</loc>
     
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -85,7 +94,7 @@
 
   <url>
     <loc>https://wirelessr.github.io/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -93,77 +102,84 @@
   
   <url>
     <loc>https://wirelessr.github.io/tags/Architecture/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Elasticsearch/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Performance/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Database/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Staff/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Career/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/TiDB/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Data/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Shopify/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Scalability/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/tags/Availability/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/tags/Uber/</loc>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -172,28 +188,28 @@
   
   <url>
     <loc>https://wirelessr.github.io/categories/Elasticsearch/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/categories/Career/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/categories/Architecture/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>https://wirelessr.github.io/categories/hexo/</loc>
-    <lastmod>2023-05-21</lastmod>
+    <lastmod>2023-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

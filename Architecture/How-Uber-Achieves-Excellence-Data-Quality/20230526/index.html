@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="UwHbW2CTRb9hu_gAS_JoTXH5d5V7EK1LW8M3ReqlD9c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="導讀在討論數據品質(Data Quality)前，我們往往是看著別人提出的品質指標，並且想方設法的套進自己的組織內，但這樣的流程是不對的。即便是Uber這種已經建立完整監控數據品質架構的公司，也不是一步登天的。 事實上，Uber也經過很長一段時間去摸索該如何設定指標以及如何建立架構，因此我們看到的一套完整架構也是根據組織內部的需要逐步調整最後才能貼合現實。  翻譯自：Uber Tech Blog">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uber如何做到傑出的資料品質">
+<meta property="og:url" content="https://wirelessr.github.io/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/index.html">
+<meta property="og:site_name" content="CT譯站">
+<meta property="og:description" content="導讀在討論數據品質(Data Quality)前，我們往往是看著別人提出的品質指標，並且想方設法的套進自己的組織內，但這樣的流程是不對的。即便是Uber這種已經建立完整監控數據品質架構的公司，也不是一步登天的。 事實上，Uber也經過很長一段時間去摸索該如何設定指標以及如何建立架構，因此我們看到的一套完整架構也是根據組織內部的需要逐步調整最後才能貼合現實。  翻譯自：Uber Tech Blog">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-1-1-1.png">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-2-1-4.png">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-3-3-1.png">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-4-8.png">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-5.png">
+<meta property="og:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-6-3.png">
+<meta property="article:published_time" content="2023-05-26T03:20:09.000Z">
+<meta property="article:modified_time" content="2023-05-26T03:44:17.257Z">
+<meta property="article:author" content="CT Wu">
+<meta property="article:tag" content="Architecture">
+<meta property="article:tag" content="Data">
+<meta property="article:tag" content="Uber">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-1-1-1.png">
+
+
+<link rel="canonical" href="https://wirelessr.github.io/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/","path":"Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/","title":"Uber如何做到傑出的資料品質"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Uber如何做到傑出的資料品質 | CT譯站</title>
+  
+
+
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "gqdi4dm6in");
+</script>
+
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9820460770755862"
+     crossorigin="anonymous"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CT譯站</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">各種軟體/架構相關文章的翻譯</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8E%E8%AE%80"><span class="nav-number">1.</span> <span class="nav-text">導讀</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Case-Study"><span class="nav-number">2.</span> <span class="nav-text">Case Study</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Quality-Standardization"><span class="nav-number">3.</span> <span class="nav-text">Data Quality Standardization</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Quality-Platform-Architecture"><span class="nav-number">4.</span> <span class="nav-text">Data Quality Platform Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E7%94%A2%E7%94%9F%E5%99%A8-Test-Generator"><span class="nav-number">4.1.</span> <span class="nav-text">測試產生器(Test Generator)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%AC%E8%A9%A6%E5%9F%B7%E8%A1%8C%E5%BC%95%E6%93%8E-Test-Execute-Engine"><span class="nav-number">4.2.</span> <span class="nav-text">測試執行引擎(Test Execute Engine)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E6%B8%AC%E8%A9%A6%E5%9E%8B%E6%85%8B"><span class="nav-number">4.2.1.</span> <span class="nav-text">混合測試型態</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bloom-Filter-%E8%B7%A8%E8%B3%87%E6%96%99%E5%BA%AB%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.2.2.</span> <span class="nav-text">Bloom Filter 跨資料庫一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BC%95%E9%87%8F%E7%B4%9A%E8%B7%A8%E8%B3%87%E6%96%99%E5%BA%AB%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.2.3.</span> <span class="nav-text">輕量級跨資料庫一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%96%E6%A8%A3%E6%80%A7%E6%B8%AC%E8%A9%A6"><span class="nav-number">4.2.4.</span> <span class="nav-text">取樣性測試</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%8A%E8%AD%A6%E7%94%A2%E7%94%9F%E5%99%A8-Alert-Generator"><span class="nav-number">4.3.</span> <span class="nav-text">告警產生器(Alert Generator)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%84%8F%E5%A4%96%E7%AE%A1%E7%90%86%E8%80%85-Incident-Manager"><span class="nav-number">4.4.</span> <span class="nav-text">意外管理者(Incident Manager)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E6%A8%99%E5%9B%9E%E5%A0%B1%E5%99%A8-Metric-Reporter-%E5%92%8C%E5%91%88%E7%8F%BE%E5%B7%A5%E5%85%B7-Consumption-Tools"><span class="nav-number">4.5.</span> <span class="nav-text">指標回報器(Metric Reporter)和呈現工具(Consumption Tools)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%8C%E8%A8%98"><span class="nav-number">4.6.</span> <span class="nav-text">後記</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CT Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wirelessr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wirelessr" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://medium.com/@lazypro" title="https:&#x2F;&#x2F;medium.com&#x2F;@lazypro" rel="noopener" target="_blank">Medium</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://ithelp.ithome.com.tw/users/20146414/ironman" title="https:&#x2F;&#x2F;ithelp.ithome.com.tw&#x2F;users&#x2F;20146414&#x2F;ironman" rel="noopener" target="_blank">iThome</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Uber如何做到傑出的資料品質 | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Uber如何做到傑出的資料品質
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2023-05-26 11:20:09 / 修改時間：11:44:17" itemprop="dateCreated datePublished" datetime="2023-05-26T11:20:09+08:00">2023-05-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="導讀"><a href="#導讀" class="headerlink" title="導讀"></a>導讀</h1><p>在討論數據品質(Data Quality)前，我們往往是看著別人提出的品質指標，並且想方設法的套進自己的組織內，但這樣的流程是不對的。即便是Uber這種已經建立完整監控數據品質架構的公司，也不是一步登天的。</p>
+<p>事實上，Uber也經過很長一段時間去摸索該如何設定指標以及如何建立架構，因此我們看到的一套完整架構也是根據組織內部的需要逐步調整最後才能貼合現實。</p>
+<hr>
+<p>翻譯自：<a target="_blank" rel="noopener" href="https://www.uber.com/en-TW/blog/operational-excellence-data-quality/">Uber Tech Blog</a></p>
+<p>Uber在全球市場能有效維運線上環境歸功於數以百計的服務、機器學習模型和成千上萬的資料集。當成長突飛猛進時，Uber透過維護數據品質來提供優秀的商業決策。若是沒有數據品質保證，下游的服務和機器學習模型成效會顯著下降，這需要很多額外操作才有辦法回填那些髒資料。最糟糕的是，這有可能會根本無法被察覺，而變成隱形殺手。</p>
+<p>這促使Uber建立一個數據品質平台(UDQ)來監控這些問題。為了資料品質能夠達標，UDQ支援超過2000個重要資料集，被且偵測到超過90%的資料問題。這篇文章會描述Uber怎麼定義數據品質標準，以及如何整合工作流程以便良好維運。</p>
+<span id="more"></span>
+
+<h1 id="Case-Study"><a href="#Case-Study" class="headerlink" title="Case Study"></a>Case Study</h1><p>身為一個數據驅動公司，Uber透過海量資料來做商業決策。舉例來說，行程的制定仰賴多個參數：區域、天氣、事件等，其中最決定性的兩個參數是需求量和供給量。</p>
+<p>需求量和供給量的資料集是來自移動裝置經由實時管線輸入的。任何系統層面的問題(管線延遲、App推送錯誤等)都會導致數據不完整或不精確，這就會導致行程計算錯誤進而影響整個市場。因此，能夠主動捕捉這樣的錯誤就非常重要。</p>
+<p>要能正確在海量資料集下找到品質問題，最直覺的作法是預先定義一連串的驗證(測試)規則，接著定期執行測試來確認數據品質有沒有達標(SLA)。對於供給量的資料集，我們可以預先定義如下測試，系統會根據設定好的頻率定期發動，若是測試失敗就會送出告警。</p>
+<blockquote>
+<p>表格和公式就不翻了，不難看懂</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Description</th>
+<th>Mocked Queries</th>
+<th>Mocked Assertion</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Daily supply data count should be no less than 10,000</td>
+<td>SELECT COUNT(*) FROM supply WHERE datestr &#x3D; CURRENT_DATE;</td>
+<td>query_value &gt; 10,000</td>
+</tr>
+<tr>
+<td>Supply data count should be consistent week over week</td>
+<td>SELECT COUNT(*) FROM supply WHERE datestr &#x3D; CURRENT_DATE;</td>
+<td>ABS(query0_value – query1_value) &#x2F; query1_value &lt; 1%</td>
+</tr>
+<tr>
+<td></td>
+<td>SELECT COUNT(*) FROM supply WHERE datestr &#x3D; DATE_ADD(‘day’, -7, CURRENT_DATE);</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>UDQ就是根據這樣的基礎搭建的。但是，為了要能更好的維運數千張資料表，Uber必須考慮以下限制：</p>
+<ul>
+<li>各團隊間沒有一個標準的數據品質測量方法。</li>
+<li>建立一個資料集的測試需要很多手工，一次上傳大量資料表時難度又更高。</li>
+<li>除了數據品質測試，還需要一個自動化且標準化的告警機制，但又不能誤報。</li>
+<li>在問題被偵測到後，光只有告警是不夠的，還需要有個好的流程能確保所有問題都被解決。</li>
+<li>為了測量成效，需要對於成功條件的清楚定義，並且要能簡單的計算成效指標。</li>
+<li>身為一個全公司通用的平台，UDQ必須要能整合其他的數據平台。</li>
+</ul>
+<h1 id="Data-Quality-Standardization"><a href="#Data-Quality-Standardization" class="headerlink" title="Data Quality Standardization"></a>Data Quality Standardization</h1><p>為了設計Uber數據品質的基準，Uber搜集來自資料生產者和消費者的回饋，並且分析過去幾年意外事件的主因。有些常見的問題包含：資料抵達延遲、資料丟失或重複、跨資料中心的不一致或資料不正確等。根據這些，Uber訂了一些分類來涵蓋所有品質問題。</p>
+<ul>
+<li>新鮮度：當資料已經99.9%完整時的延遲時間。</li>
+<li>完整性：資料行的完整比例，這需要和上游資料及比對。</li>
+<li>重複性：資料行中主鍵重複的比例。</li>
+<li>跨資料中心的一致性：比對源資料中心和目的資料中心資料集的資料遺失比例。</li>
+<li>其他：根據商業邏輯的測試比對都屬於這個分類。</li>
+</ul>
+<p>每一個測試分類都定義了一些計算公式。</p>
+<table>
+<thead>
+<tr>
+<th>分類</th>
+<th>先決條件</th>
+<th>測試公式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>新鮮度</td>
+<td>已經具備完整性指標</td>
+<td>current_ts – latest_ts where data is 99.9% complete &lt; freshnessSLA</td>
+</tr>
+<tr>
+<td>完整性</td>
+<td>上下游資料集是一對一關係</td>
+<td>downstream_row_count &#x2F; upstream_row_count &gt; completenessSLA</td>
+</tr>
+<tr>
+<td>完整性(抽樣)</td>
+<td>上游資料集抽樣寫入Hive</td>
+<td>sampled_row_count_in_hive &#x2F; total_sampled_row_count &gt; completenessSLA</td>
+</tr>
+<tr>
+<td>重複性</td>
+<td>資料生產者有提供主鍵</td>
+<td>1 – primary_key_count &#x2F; total_row_count &lt; duplicatesSLA</td>
+</tr>
+<tr>
+<td>跨資料中心一致性</td>
+<td>N&#x2F;A</td>
+<td>min(row_count, row_count_other_dc) &#x2F; row_count &gt; consistencySLA</td>
+</tr>
+<tr>
+<td>跨資料中心一致性(抽樣)</td>
+<td>用Bloom-Filter抽樣兩邊的資料中心</td>
+<td>intersection(primary_key_count, primary_key_count_other_dc) &#x2F; primary_key_count &gt; consistencySLA</td>
+</tr>
+<tr>
+<td>其他</td>
+<td>N&#x2F;A</td>
+<td>使用者建立客製化的測試，沒有標準公式。</td>
+</tr>
+</tbody></table>
+<h1 id="Data-Quality-Platform-Architecture"><a href="#Data-Quality-Platform-Architecture" class="headerlink" title="Data Quality Platform Architecture"></a>Data Quality Platform Architecture</h1><p>數據品質架構包含以下元件：測試執行引擎(Test Execute Engine)、測試產生器(Test Generator)、告警產生器(Alert Generator)、意外管理者(Incident Manager)、指標回報器(Metric Reporter)和呈現工具(Consumption Tools)。整個架構的核心是測試執行引擎，會根據各種需求執行測試、檢查結果並將結果存入資料庫。其餘元件則是圍繞著測試執行引擎，完成整個數據品質的生命週期。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-1-1-1.png" alt="Figure 1: Data Quality Platform architecture"></p>
+<h2 id="測試產生器-Test-Generator"><a href="#測試產生器-Test-Generator" class="headerlink" title="測試產生器(Test Generator)"></a>測試產生器(Test Generator)</h2><p>要良好的維運數據品質，根據經驗是要盡可能減少使用者手動建立測試。測試產生器可以根據資料集的元數據自動產生標準的測試。Uber透過集中管理的元數據作為單一信任來源，這些元數據來自使用者在各種不同的存儲上建立的數據欄位。以下是一些自動建立測試會用到的數據欄位：</p>
+<ul>
+<li>SLAs：這是用來定義檢驗的閥值。所有Uber的資料都有被分級(T0是最高；T5是最低)，根據分級有預設的SLA。</li>
+<li>分區鍵(Partition Keys)：對於大型且持續新增資料的資料表，Uber只測試最新的分區，因為靠著週期性的測試就能達成完整測試。分區鍵是從各種存儲的元數據上取得，例如Apache Hive有Metadata Store、Elasticsearch有index template。</li>
+<li>排程時間：對於資料表的分區測試，需要等到一個分區完整寫完才可以執行。Uber透過新鮮度的SLA來決定分區寫完的預期時間，因此分區測試會用新鮮度的SLA來排程。</li>
+<li>主鍵：有些測試必須要有主鍵，這是唯一需要使用者輸入的參數。UDQ會略過那些漏了主鍵的測試，然後發送週報提醒使用者在對應的元數據服務上設定主鍵。</li>
+</ul>
+<p>除此之外，對於監控的資料表來說，使用者還會在意他的上下游資料，一旦有問題被偵測到才有辦法確認是否是上游造成的錯誤，並且通知對應的下游。UDQ當然也支援根據Lineage服務自動為所有的上下游建立測試，這就顯著提昇測試的效益也確保整個資料鏈路的品質。</p>
+<p>但是，Lineage是動態的，因為ETL的邏輯有可能改變，隨時會有新的資料表加入以及舊的資料表淘汰。為了保持Lineage是最新的，Uber透過每日的Apache Spark任務來獲取最新的Lineage以及重新建立對應的測試來保證測試也能跟上最新的Linage。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-2-1-4.png" alt="Figure 2: Pruning obsolete tables based on lineage"></p>
+<p>為了進一步提昇數據品質標準，Uber對上級(T0)資料集建立100%覆蓋的測試，這可以透過Push和Pull模型來達成。</p>
+<ul>
+<li>Push模型：持續取得元數據變更(資料被升降級、SLA更新等)，並實時調整對應的測試。</li>
+<li>Pull模型：批次抓最高級的資料集和元數據來更新對應的測試。</li>
+</ul>
+<h2 id="測試執行引擎-Test-Execute-Engine"><a href="#測試執行引擎-Test-Execute-Engine" class="headerlink" title="測試執行引擎(Test Execute Engine)"></a>測試執行引擎(Test Execute Engine)</h2><p>執行引擎是一個基於Celery的服務，目前支援18000個測試，約需要執行100K個條件。測試可以是根據上述機制自動建立的也能是使用者客製化的，每個測試都有一個檢驗規則驗證是否滿足SLA。</p>
+<p>測試可以是很簡單的條件，例如與一個常數比較(percentage_duplicates &lt;&#x3D; .01)，也可以是一個計算過後的值。整個測試驗證的寫法是其實就是一個字串，背後有一個AST(Abstract Syntax Tree)的解析器，會把整個字串解析出來，並由測試引擎執行。</p>
+<p>這種做法可以讓測試變得很彈性也很容易增加新的比較型態。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-3-3-1.png" alt="Figure 3: Example AST structure for a test that compares the difference between two queries"></p>
+<h3 id="混合測試型態"><a href="#混合測試型態" class="headerlink" title="混合測試型態"></a>混合測試型態</h3><p>混合測試會在解析AST之前有額外的計算步驟。這些額外的計算步驟需要流水線或非同步任務支援，將結果計算完後儲存起來給AST用，Uber在做跨資料庫一致性的兩種作法以及上下游測試都是基於混合測試實作的。</p>
+<h3 id="Bloom-Filter-跨資料庫一致性"><a href="#Bloom-Filter-跨資料庫一致性" class="headerlink" title="Bloom Filter 跨資料庫一致性"></a>Bloom Filter 跨資料庫一致性</h3><p>資料庫一致性比較其中一種作法是透過Bloom filter (一種機率算法，可以快速比較兩個資料集是否一致)。在每天的一致性測試中就是計算其中一個資料集的Bloom filter然後儲存下來並拿去另一個資料集進行比較，也會做一次反向比較。建立和使用Bloom filter是透過Hive的UDF，將每筆資料用Bloom filter的結果以字串形式保留，並用來比較。</p>
+<p>用Bloom filter的一個限制是可能會誤報，因為Bloom filter並不是精準的比較只是個機率模型。但是，因為每筆資料都被建成Bloom filter的鍵值，所以在收到通報時可以知道到底哪筆資料不一致。這是一個取捨，透過各種測試的組合可以有效偵測各類特定問題。</p>
+<h3 id="輕量級跨資料庫一致性"><a href="#輕量級跨資料庫一致性" class="headerlink" title="輕量級跨資料庫一致性"></a>輕量級跨資料庫一致性</h3><p>這是一個比Bloom filter更輕量的作法，僅僅比較兩個資料集的資料數量，僅需要幾秒鐘就可以做完很多資料集的比較。</p>
+<p>Uber透過兩個指令來讓測試引擎做這種驗證，第一條指令是在每個需要比較的資料集上執行，取得資料數量並儲存在MySQL；第二條指令是要測試引擎拿出所有的資料量並進行一次性比較，並產生報告。</p>
+<h3 id="取樣性測試"><a href="#取樣性測試" class="headerlink" title="取樣性測試"></a>取樣性測試</h3><p>取樣性測試是一種完整性測試，隨機從上游資料集取得一些資料，並確認是否有存在在下游資料集。這是為了那些不存在在Apache Hadoop的資料集設計的，當執行取樣性測試，測試引擎會從上游抓出資料並ETL進Hive，接著拿去和下游資料集比對。</p>
+<h2 id="告警產生器-Alert-Generator"><a href="#告警產生器-Alert-Generator" class="headerlink" title="告警產生器(Alert Generator)"></a>告警產生器(Alert Generator)</h2><p>就像數據品質測試是自動產生的，告警也是根據模版或商業邏輯自動產生的。有一些需要的額外資訊，例如：資料表擁有者、email等資訊會放在Metadata服務。終極目標是希望做到T0等級的資料都有100%的告警覆蓋，測試建立的流程就跟上面說的一樣，但是還有些額外工作，例如：避免誤報以及維持一個統一的使用者體驗。</p>
+<p>首先要問一個問題，所有失敗的測試都是真正失敗的嗎？以下圖為例，1:00 AM看起來只是暫時性的失敗。為了避免告警頻繁被觸發，Uber定義了一個週期，要失敗超過週期才會真正觸發告警，以下圖來說，週期是四小時，所以要連續失敗四次才會發出告警，也就是8-9 AM。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-4-8.png" alt="Figure 4: Example Data Quality Incident based on sustain period"></p>
+<p>即便是真的告警，Uber也想限制告警次數來避免過度影響使用者。例如新鮮度測試極有可能與完整性測試一同出現，當資料管線延遲那就既會收到新鮮度的告警同時也會收到完整性的告警，那就應該告警一次。因此，Uber將新鮮度測試的告警作為最優先，若是新鮮度告警了，那麼別的種類的告警就可以不用送。</p>
+<p>另外還有一個優化，UDQ有一個灰色週期的機制，可以讓剛上線的測試規則不會發出真的告警，讓使用者有機會能夠修復已知問題。</p>
+<h2 id="意外管理者-Incident-Manager"><a href="#意外管理者-Incident-Manager" class="headerlink" title="意外管理者(Incident Manager)"></a>意外管理者(Incident Manager)</h2><p>意外管理者是另一個重要的元件，用來分類告警。</p>
+<p>當使用者收到告警後，使用者把問題解決掉，要怎麼讓系統知道問題已經處理好了？讓使用者輸入嗎？這不是個好作法，一來這會增加使用者負擔，二來這樣的作法不夠可靠。因此，意外管理者會週期性的重試那些錯誤的測試案例，這樣就可以在不影響使用者的情況下偵測到問題已被修復。</p>
+<p>除了自動排程的重試，UDQ還提供使用者一個能夠手動註記並觸發重試的機制，這有以下幾種使用情境：</p>
+<ul>
+<li>當使用者想馬上解決一個告警而不想等下次的自動觸發</li>
+<li>若是測試設定錯誤之類的誤報，使用者需要能夠讓他強制解決</li>
+<li>Uber鼓勵使用者在註記系統上留下一些資訊通知下游或是留作未來分析的紀錄</li>
+</ul>
+<p>雖然有自動化測試，但無法保證能夠偵測到所有的意外，因此意外管理者也能夠讓使用者主動回報問題，意外管理者會與已經偵測到的問題比對確認是不是新的。最終，整個系統整合自動偵測與人工回報，使數據品質能覆蓋更多面向。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-5.png" alt="Figure 5: Incident Manager workflow"></p>
+<h2 id="指標回報器-Metric-Reporter-和呈現工具-Consumption-Tools"><a href="#指標回報器-Metric-Reporter-和呈現工具-Consumption-Tools" class="headerlink" title="指標回報器(Metric Reporter)和呈現工具(Consumption Tools)"></a>指標回報器(Metric Reporter)和呈現工具(Consumption Tools)</h2><p>能夠進行自動化測試後接著就是評量測試的成效和呈現數據品質的結果，因此指標回報器會量測成功和失敗的測試案例，並給出具體的評分。而呈現工具則會在儀表板上呈現各種測試的結果以及以圖形化的方式展示資料集的品質。</p>
+<p>除此之外還有一些元件可以讓使用者透過儀表板上的結果直接查詢具體的數據以釐清問題，或者將UDQ與Uber的ETL管理整合，讓ETL管理系統在察覺到即將要運行的ETL不夠有品質而直接暫停運行。</p>
+<p><img src="https://blogapi.uber.com/wp-content/uploads/2022/08/Figure-6-3.png"></p>
+<hr>
+<h2 id="後記"><a href="#後記" class="headerlink" title="後記"></a>後記</h2><p>這篇文章講了滿多Uber在進行數據品質量測上的實務作法，UDQ的架構雖然完整，但其實龐大到不是一般規模的公司能夠提供的。與其照本宣科一個「完美」架構，不如借鏡一些Uber實務上的作法，找出屬於自己的數據品質量測機制。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+    <!-- related posts -->
+        <h2>相關文章推薦</h2>
+        <ul class="popular-posts">
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/HTAP-learning-from-Xiaohongshu/20230505/" rel="bookmark">HTAP：從小紅書的案例學習NewSQL</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/" rel="bookmark">有效提昇Elasticsearch整座集群效能的三個小技巧</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/" rel="bookmark">Shopify如何處理大促？</a></div>
+            </li>
+        </ul>
+
+          <div class="post-tags">
+              <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+              <a href="/tags/Data/" rel="tag"># Data</a>
+              <a href="/tags/Uber/" rel="tag"># Uber</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/" rel="prev" title="有效提昇Elasticsearch整座集群效能的三個小技巧">
+                  <i class="fa fa-chevron-left"></i> 有效提昇Elasticsearch整座集群效能的三個小技巧
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CT Wu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"wirelessr/wirelessr.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
