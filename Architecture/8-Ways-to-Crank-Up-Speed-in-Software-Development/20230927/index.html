@@ -27,14 +27,26 @@
 <meta property="og:site_name" content="CT譯站">
 <meta property="og:description" content="引言Apptio是一間做企業IT管理解決的公司，旗下有數款方案針對敏捷開發流程的管理軟體。在2023年六月，被IBM重金收購，從其端出牛肉到出關只有幾年的時間，本身就是一間很敏捷的公司。 他們寫了一篇關於如何加速軟體開發的方法論，並且鉅細靡遺的描繪各種軟體開發場景，是一篇非常值得一讀的文章。 以下翻譯自：8 Ways to Crank Up Speed in Software Developmen">
 <meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-18-30-26.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-16-05.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-17-52.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-23-10.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-24-02.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-26-27.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-30-51.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-31-49.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-35-48.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-37-39.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-09-27-20-39-51.png">
 <meta property="article:published_time" content="2023-09-27T08:01:41.000Z">
-<meta property="article:modified_time" content="2023-09-27T12:41:45.438Z">
+<meta property="article:modified_time" content="2023-09-27T12:54:46.565Z">
 <meta property="article:author" content="CT Wu">
 <meta property="article:tag" content="Architecture">
 <meta property="article:tag" content="Elasticsearch">
 <meta property="article:tag" content="Performance">
 <meta property="article:tag" content="Database">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wirelessr.github.io/images/2023-09-27-18-30-26.png">
 
 
 <link rel="canonical" href="https://wirelessr.github.io/Architecture/8-Ways-to-Crank-Up-Speed-in-Software-Development/20230927/">
@@ -126,7 +138,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9F%E5%BA%A6%E7%9A%84%E5%85%A9%E5%80%8B%E9%9D%A2%E5%90%91"><span class="nav-number">2.</span> <span class="nav-text">速度的兩個面向</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%9D%E5%88%BA%EF%BC%8C%E9%A6%AC%E6%8B%89%E6%9D%BE%EF%BC%8C%E6%88%96%E8%80%85%E2%80%A6%E9%96%93%E6%AD%87%EF%BC%81"><span class="nav-number">2.1.</span> <span class="nav-text">衝刺，馬拉松，或者…間歇！</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%851%EF%BC%9A%E6%80%A5%E9%80%9F%E8%A1%9D%E5%88%BA"><span class="nav-number">2.1.1.</span> <span class="nav-text">選項1：急速衝刺</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%852%EF%BC%9A%E9%81%A9%E5%BA%A6%E8%A1%9D%E5%88%BA"><span class="nav-number">2.1.2.</span> <span class="nav-text">選項2：適度衝刺</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%853%EF%BC%9A%E9%A6%AC%E6%8B%89%E6%9D%BE"><span class="nav-number">2.1.3.</span> <span class="nav-text">選項3：馬拉松</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%854%EF%BC%9A%E9%96%93%E6%AD%87"><span class="nav-number">2.1.4.</span> <span class="nav-text">選項4：間歇</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E7%9A%84%E9%80%9F%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">軟體開發的速度模型</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9F%E5%BA%A6%E7%9A%84%E5%85%A9%E5%80%8B%E9%9D%A2%E5%90%91"><span class="nav-number">2.</span> <span class="nav-text">速度的兩個面向</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%9D%E5%88%BA%EF%BC%8C%E9%A6%AC%E6%8B%89%E6%9D%BE%EF%BC%8C%E6%88%96%E8%80%85%E2%80%A6%E9%96%93%E6%AD%87%EF%BC%81"><span class="nav-number">2.1.</span> <span class="nav-text">衝刺，馬拉松，或者…間歇！</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%851%EF%BC%9A%E6%80%A5%E9%80%9F%E8%A1%9D%E5%88%BA"><span class="nav-number">2.1.1.</span> <span class="nav-text">選項1：急速衝刺</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%852%EF%BC%9A%E9%81%A9%E5%BA%A6%E8%A1%9D%E5%88%BA"><span class="nav-number">2.1.2.</span> <span class="nav-text">選項2：適度衝刺</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%853%EF%BC%9A%E9%A6%AC%E6%8B%89%E6%9D%BE"><span class="nav-number">2.1.3.</span> <span class="nav-text">選項3：馬拉松</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%B8%E9%A0%854%EF%BC%9A%E9%96%93%E6%AD%87"><span class="nav-number">2.1.4.</span> <span class="nav-text">選項4：間歇</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E7%9A%84%E9%80%9F%E5%BA%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">軟體開發的速度模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E8%83%BD%E5%92%8C%E7%B6%93%E9%A9%97"><span class="nav-number">3.1.</span> <span class="nav-text">技能和經驗</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B2%B7%E4%BA%BA%E5%80%91%E8%A6%81%E6%B1%82%E7%9A%84%E6%9B%B8"><span class="nav-number">3.1.1.</span> <span class="nav-text">買人們要求的書</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%81%E4%BA%BA%E5%80%91%E5%8E%BB%E7%A0%94%E8%A8%8E%E6%9C%83"><span class="nav-number">3.1.2.</span> <span class="nav-text">送人們去研討會</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B5%84%E7%B9%94%E5%AD%B8%E7%BF%92%E6%9C%83"><span class="nav-number">3.1.3.</span> <span class="nav-text">組織學習會</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E4%BE%9B%E6%99%82%E9%96%93%E5%8E%BB%E5%AD%B8%E6%96%B0%E4%BA%8B%E7%89%A9"><span class="nav-number">3.1.4.</span> <span class="nav-text">提供時間去學新事物</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%AB%E5%8A%A9%E4%BA%BA%E5%80%91%E6%9B%B4%E4%BA%86%E8%A7%A3%E9%A0%98%E5%9F%9F"><span class="nav-number">3.1.5.</span> <span class="nav-text">幫助人們更了解領域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B6%93%E9%A9%97"><span class="nav-number">3.1.6.</span> <span class="nav-text">經驗</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%B5%B1%E8%A4%87%E9%9B%9C%E5%BA%A6"><span class="nav-number">3.2.</span> <span class="nav-text">系統複雜度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%80%E8%A1%93%E5%82%B5"><span class="nav-number">3.2.1.</span> <span class="nav-text">技術債</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%A7%8B"><span class="nav-number">3.2.2.</span> <span class="nav-text">重構</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B7%A9%E6%85%A2%E6%88%96%E4%B8%8D%E7%A9%A9%E5%AE%9A%E7%9A%84%E8%87%AA%E5%8B%95%E5%8C%96%E6%B8%AC%E8%A9%A6"><span class="nav-number">3.2.3.</span> <span class="nav-text">緩慢或不穩定的自動化測試</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%9B%E4%BB%94%E7%B7%A8%E7%A8%8B"><span class="nav-number">3.2.4.</span> <span class="nav-text">牛仔編程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%AD%E6%9C%9F%E5%8A%A0%E9%80%9F"><span class="nav-number">3.3.</span> <span class="nav-text">短期加速</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%BB%E7%B7%9A"><span class="nav-number">3.3.1.</span> <span class="nav-text">死線</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%BB%E7%B7%9A%E5%92%8C%E8%BF%AD%E4%BB%A3%E9%96%8B%E7%99%BC"><span class="nav-number">3.3.2.</span> <span class="nav-text">死線和迭代開發</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E7%8F%AD"><span class="nav-number">3.3.3.</span> <span class="nav-text">加班</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%86%B1%E5%BF%83%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.3.4.</span> <span class="nav-text">熱心工作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%88%E6%B3%A8%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.4.</span> <span class="nav-text">專注工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E7%A9%A9%E5%AE%9A%E7%9A%84%E5%9C%98%E9%9A%8A-x2F-%E4%BA%BA%E5%93%A1%E8%BC%AA%E8%AA%BF"><span class="nav-number">3.4.1.</span> <span class="nav-text">不穩定的團隊&#x2F;人員輪調</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%96%8B%E6%94%BE%E7%A9%BA%E9%96%93"><span class="nav-number">3.4.2.</span> <span class="nav-text">開放空間</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%B3%E6%99%82%E9%80%9A%E8%A8%8A-x2F-%E9%80%9A%E7%9F%A5%E7%AD%89"><span class="nav-number">3.4.3.</span> <span class="nav-text">即時通訊&#x2F;通知等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%B7%A5"><span class="nav-number">3.4.4.</span> <span class="nav-text">多工</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%B7%A5"><span class="nav-number">3.5.</span> <span class="nav-text">重工</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bugs"><span class="nav-number">3.5.1.</span> <span class="nav-text">Bugs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E6%98%8E%E7%A2%BA%E7%9A%84%E9%9C%80%E6%B1%82"><span class="nav-number">3.5.2.</span> <span class="nav-text">不明確的需求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UX%E8%9E%8D%E5%85%A5%E9%96%8B%E7%99%BC"><span class="nav-number">3.5.3.</span> <span class="nav-text">UX融入開發</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A6%8F%E6%A0%BC%E6%9B%B8"><span class="nav-number">3.5.4.</span> <span class="nav-text">規格書</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%9A%E5%B0%8D%E7%9A%84%E4%BA%8B"><span class="nav-number">3.5.5.</span> <span class="nav-text">做對的事</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%9D%E9%80%9A%E7%AE%A1%E9%81%93"><span class="nav-number">3.5.5.1.</span> <span class="nav-text">溝通管道</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E9%87%8F%E7%B5%B1%E8%A8%88"><span class="nav-number">3.5.5.2.</span> <span class="nav-text">用量統計</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E6%8E%92%E5%90%8D%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.5.5.3.</span> <span class="nav-text">功能排名模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UX%E5%9B%9E%E9%A5%8B"><span class="nav-number">3.5.6.</span> <span class="nav-text">UX回饋</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E5%A4%9A%E4%BA%BA-x2F-%E6%9B%B4%E5%A4%9A%E9%96%8B%E7%99%BC%E5%9C%98%E9%9A%8A"><span class="nav-number">3.6.</span> <span class="nav-text">更多人&#x2F;更多開發團隊</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%81%98%E5%83%B1"><span class="nav-number">3.6.1.</span> <span class="nav-text">聘僱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E4%BD%9C%E5%B7%A5%E4%BD%9C"><span class="nav-number">3.6.2.</span> <span class="nav-text">合作工作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9B%E8%80%97%E5%92%8C%E6%B2%92%E5%83%B9%E5%80%BC%E7%9A%84%E9%99%84%E5%8A%A0%E6%B4%BB%E5%8B%95"><span class="nav-number">3.7.</span> <span class="nav-text">虛耗和沒價值的附加活動</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%83%E8%AD%B0"><span class="nav-number">3.7.1.</span> <span class="nav-text">會議</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E4%B8%AD%E9%81%8B%E5%8B%95"><span class="nav-number">3.7.2.</span> <span class="nav-text">工作中運動</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E4%B8%AD%E5%AD%B8%E7%BF%92"><span class="nav-number">3.7.3.</span> <span class="nav-text">工作中學習</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E7%94%9F%E6%B4%BB%E5%B9%B3%E8%A1%A1"><span class="nav-number">3.8.</span> <span class="nav-text">工作生活平衡</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E9%A1%A7"><span class="nav-number">4.</span> <span class="nav-text">回顧</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -227,7 +239,7 @@
       <span class="post-meta-item-text">發表於</span>
       
 
-      <time title="創建時間：2023-09-27 16:01:41 / 修改時間：20:41:45" itemprop="dateCreated datePublished" datetime="2023-09-27T16:01:41+08:00">2023-09-27</time>
+      <time title="創建時間：2023-09-27 16:01:41 / 修改時間：20:54:46" itemprop="dateCreated datePublished" datetime="2023-09-27T16:01:41+08:00">2023-09-27</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -288,6 +300,175 @@
 <p>高速衝刺模式用一個休閒週來作結，這個休閒週就安心做重構和討論未來走向。</p>
 <p>這樣做的好處很明顯，平均步調會比純馬拉松模式更快，且高速步調後接一個馬拉松就比較沒壓力。更有甚者，當團隊奮力把事情搞定這個隨之而來的馬拉松會是一個激勵。當把東西交出去，會讓人感覺舒服，這可以視為一個里程碑。透過馬拉松調劑一下也許是人們願意全速衝刺的原因。</p>
 <h1 id="軟體開發的速度模型"><a href="#軟體開發的速度模型" class="headerlink" title="軟體開發的速度模型"></a>軟體開發的速度模型</h1><p>讓我們從一個總覽開始，這張圖不是要嚇人儘管這張圖看起來很恐怖。但相信我，我會解釋每一個細節，你會得到一個分析類似問題的強力工具。</p>
+<p><img src="/images/2023-09-27-18-30-26.png"></p>
+<p>這張圖顯示一些會影響開發速度的因素。綠色方塊表示這個活動會提升速度，綠色方塊越多越好。黃色方塊代表需要有總量管制，舉例來說，我們可以透過技術債來提升速度，但如果留下過多技術債，速度則會顯著下降。紅色方塊顯示那些會減速的東西，越少越好。</p>
+<p>綠色箭頭代表是正向影響，例如專注工作會提升開發速度。紅色箭頭則是負面影響，舉例來說，優秀的開發技術會減少系統複雜度(好的工程師會建立較精簡的系統)。</p>
+<p>現在我們可以從圖中問出幾個問題，例如：什麼會提升開發速度？什麼會讓開發降速？我們該怎麼做才可以讓軟體更快(更好)？這個模型也許不是完美的，但都可以自由修改。</p>
+<p>接下來我會解釋這個模型的不同區塊，分析他們並且提供一些關於速度的想法。希望這會是更深入思考問題並產生解法的開始。</p>
+<h2 id="技能和經驗"><a href="#技能和經驗" class="headerlink" title="技能和經驗"></a>技能和經驗</h2><p><img src="/images/2023-09-27-20-16-05.png"></p>
+<p>好的技能顯然會提升開發速度，更多熟練的開發者會用更簡潔的解法更快解決問題。儘管有些人說熟練的開發者會能比不熟練的開發者快10倍，但我不覺得這是一個常見的狀況。</p>
+<p>下一個常見問題該做些什麼來提升開發者技能？首先，我們可以只聘僱專業的開發者，這也許可行但這模式無法有效擴展。專業開發者更傾向去那些需要他技能的地方，但有多少公司真的有許多極富挑戰性的問題？並不多。另一方面，如果我們的產品不是火箭工程，那我們也不需要整個團隊都是PhD開發者。也就是對於每間公司來說，需要的技能都是不同的，在Google很熟練的開發者不一定在外包公司也會很熟練。</p>
+<p>好，我們能夠定義屬於自己公司的熟練標準，但依然苦於招募到對應的人，擴展性問題依然持續。因此，我們也需要招募沒那麼熟練的開發者，並讓他們成長。若是他們根本不想學，又怎麼會進步呢？所以，好奇心、精力充沛、熱情這些條件是最重要的。</p>
+<p>公司也應該提供幫助人們學習的一切資源，下面是一些選項：</p>
+<h3 id="買人們要求的書"><a href="#買人們要求的書" class="headerlink" title="買人們要求的書"></a>買人們要求的書</h3><p>任何公司都應該要有一個好的圖書館。大部分我知道的好開發者都讀很多書，儘管不可能強迫人們讀書但至少應該要讓取得好書變得容易。</p>
+<h3 id="送人們去研討會"><a href="#送人們去研討會" class="headerlink" title="送人們去研討會"></a>送人們去研討會</h3><p>多數人認為研討會是新知識的來源，也許是，但我認為研討會是熱情的推手。研討會會驅動人們去學習、嘗試新東西且最理想的是能提供一些方向。</p>
+<p>我喜歡去參加那些對我來說是新主題的研討會，舉例來說，當我開始學習UX，我參加了兩個大的研討會。其中一個很有用，但另一個就還好。</p>
+<h3 id="組織學習會"><a href="#組織學習會" class="headerlink" title="組織學習會"></a>組織學習會</h3><p>學東西最好的其中一種方法是寫關於那個主題的書，不這麼極端的方法是上台報告或 workshop。一間公司應該組織一些內部的研討會來推進工作流程，不是每個人都準備好當講者，但許多人都願意嘗試。在我們公司，我們每六個月會有一個兩天的研討會，不會有外部講者，所有的主題都是由團隊成員準備的。</p>
+<p>另一個好方法是提供一個社群活動的空間，我們有一間可以容納80人的會議室，並樂於提供給地方上的UX社群、.NET社群和iOS社群。</p>
+<p>當然還有其他方法能刺激內部的學習活動。</p>
+<h3 id="提供時間去學新事物"><a href="#提供時間去學新事物" class="headerlink" title="提供時間去學新事物"></a>提供時間去學新事物</h3><p>這聽起來不像是一個必要的活動，但不見得。如果一間公司提供一些自由時間給人們學習，那就真是太棒了。Google有名的20-80法則就是一個好例子，可以騰出1&#x2F;5的時間做自己想做的研究和學習。在Apptio Targetprocess，我們也有橘色星期五。</p>
+<p>每個週五會保留給人們學習或做自己的專案，許多人會在這時候上線上課、讀文章和學習新技術。這很難評估成效，但確實有不少好處：</p>
+<ul>
+<li>事實上，這等於是一星期工作四天，至少第五天不是一般的工作日</li>
+<li>這能吸引喜歡學習的人，是招聘的一個加分項</li>
+<li>這更容易留住人們，因為他們能夠嘗試他們想要的新東西</li>
+<li>人們會更快有新技能</li>
+</ul>
+<p>為一個缺點是，這看起來會減少整體的開發速度，少了一天工作也就是直接少了20%的開發速度。哪邊更重要？不一定。如果已經非常靠近發佈日，那花每個週五來學習不太明智，但若是馬拉松模式，那這項活動非常值得。</p>
+<h3 id="幫助人們更了解領域"><a href="#幫助人們更了解領域" class="headerlink" title="幫助人們更了解領域"></a>幫助人們更了解領域</h3><p>領域知識對於每個軟體開發者都是重要的，這能讓問題被深入理解、更快產生好的解法並減少重工，也能夠讓開發者更容易發現那些不好的解法。少了領域知識，開發者會盲目的遵從商業端和產品端提供的解法，有好的領域知識，開發者可以更容易發想出優秀解法，無論是透過自己或透過與UX團隊的腦力激盪。</p>
+<p>領域知識對於產品開發來說尤其重要，生命有限所以很難深入學習每一個領域，所以最好需要找到那個可以讓你專注的事物。</p>
+<h3 id="經驗"><a href="#經驗" class="headerlink" title="經驗"></a>經驗</h3><p>工作經驗是影響開發速度最重要的因素，一個20年資歷的開發者通常比5年資歷的開發者更快解決問題(即使他們擁有相同的技能)。但是，技能不等於經驗，若是有不相關技能的大量經驗，也不會讓你更快解決眼前問題。</p>
+<p>我個人認為技能是提昇開發速度最有效的因素。如果我們有一票熟練的開發者、設計師和測試，那有很大的機會可以做出好東西；若只有菜鳥開發者，那幾乎對提昇開發速度沒幫助。</p>
+<p>大部分公司的問題範圍都很廣，有些問題很單純有些極具挑戰性，沒有經驗的開發者幾乎能從任何問題上學到知識，但有經驗的開發者會有點挑剔，建議給他們複雜的問題。因此就算有各種經驗的人在公司，最好也要讓技能的平均水準保持高點。對於每公司來說，好的平衡不相等，但至少要思考這個問題。</p>
+<h2 id="系統複雜度"><a href="#系統複雜度" class="headerlink" title="系統複雜度"></a>系統複雜度</h2><p>軟體變得越來越複雜，過去40年只有幾百種技術，但現在成千上萬，更多套件、更多模組、更多平台，什麼都更多了。</p>
+<p><img src="/images/2023-09-27-20-17-52.png"></p>
+<p>複雜度是無可避免的，這也是軟體演化帶來的。人體比病毒更複雜(這不代表人類比病毒更容易存活)，我們能做到許多事都是因為有複雜的身體系統，所以要與複雜度共存。</p>
+<p>開發者應該盡可能簡化系統。不必要的複查度是很大的系統約束，會很難加新功能也會難除錯，甚至很難知道到底發生了什麼。像我們之前提的，熟練的技能可以創造更低複雜度的系統，相對的，菜鳥開發者會使用脆弱又過份複雜的解法。舉例來說，當把HTML、Javascript、ASP.NET和C#的程式碼都放在同一個檔案，聽起來更單純，但實際上更難以被修改和擴展。</p>
+<p>什麼會讓系統更複雜？</p>
+<h3 id="技術債"><a href="#技術債" class="headerlink" title="技術債"></a>技術債</h3><p>你可能知道，技術債的概念是Ward Cunningham提出的。技術債是一個「深思熟慮」過後的選擇來實作一個不是最好的程式碼，只為了讓發布軟體更快。如果我們使用爛解法且沒留意到寫的是爛code，那這根本不是技術債，這只是爛架構。如果沒有意識到，就不是技術債。</p>
+<p>多數人認為技術債總是不好的，但不見得。以金錢來舉例，最直接的例子是在一些情況下借貸是好的，所以擁有「一些」技術債是可以接受的。Ward Cunningham也有提出一些看法：「我想借錢是的好主意，我認為快速把軟體發布出去可以更快得到經驗，這是好事。」</p>
+<p>技術債可以提升短期內的開發速度，但會提升系統複雜度，最終會使開發慢下來，這終究是個值得留意的取捨。如何解決技術債？首先，他應該被以某種方式記錄下來，這可以幫助我們了解有多少債需要還。到某個時間點，我們會發現為什麼開發這麼耗時，這時看看待辦事項裡滿滿的技術債，我想我們就懂了。這時我們唯一該做的就是停下來好好還債。</p>
+<p>其次，每一個技術債都需要審慎評估。我們很容易聽到PO在喊「這個功能要兩週後完成！」，每個好的開發者都必須負責完整解釋每個技術選擇所帶來的後果，這是軟體開發者的職責，定義好的架構。</p>
+<p>第三，技術債應該要透過重構或重寫來減少，這些活動可以是週期性的或獨立時程的。</p>
+<p>Steve McConnell提出了對於<a target="_blank" rel="noopener" href="https://www.construx.com/resources/whitepaper-managing-technical-debt/">技術債的精闢見解</a>：</p>
+<blockquote>
+<p>技術債的重要影響就是需要償還，也就是說，一但舉債就會產生利息。如果債務規模夠大，最終公司用於償還債務的費用將超過用於增加其他資產的投資。</p>
+</blockquote>
+<p>技術債可以被量化嗎？看起來可以，技術債是要修復品質問題的成本。</p>
+<p>這張圖顯示技術債不加以解決那麼技術債和其利息就會隨著時間增長，增長速度有快有慢，取決於債務累積的速度。總體來說，一個系統總是會有技術債，追求零負債是不切實際的，這可能會減緩開發功能的速度。Henrik Kniberg對技術債也有些有趣的看法。</p>
+<p><img src="/images/2023-09-27-20-23-10.png"></p>
+<h3 id="重構"><a href="#重構" class="headerlink" title="重構"></a>重構</h3><p>重構是減少系統複雜度以及償還技術債最自然的做法，但是，重構必須依賴自動化測試。我無法想像任何一個重要的系統沒有自動化測試，沒有單元&#x2F;整合測試的開發就像走在燃燒的橋上跨過峽谷，沒有回頭路。一個沒有自動化測試的龐大系統終將走向死亡。</p>
+<p>自動化測試可以增強信心，我們可以確保修改一部份程式依然保持系統正常運作，這也是重構在做的事。以下是幾個可以不做自動化測試的案例：</p>
+<ol>
+<li>非生產環境的程式 (實驗原型、腳本)</li>
+<li>可以完全確定不需要修改，後續也不需要維護的程式</li>
+</ol>
+<p>其餘所有的情境，自動化測試都必不可少。</p>
+<p>如果重構真這麼好，我們能一直進行重構嗎？當然不行。重構不會帶來任何價值，當我們重構時我們不會為系統帶來任何商業價值。我們減少系統複雜度也償還技術債了，的確，但客戶得不到東西，商業價值是由新程式建立的。那我們有辦法在一開始就把程式寫的完美、用上一個完美解法嗎？我希望可以，但做不到，尤其是需求會變更而我們一開評估的作法無法符合，這也就是我們為什麼需要迭代和重構的原因。</p>
+<h3 id="緩慢或不穩定的自動化測試"><a href="#緩慢或不穩定的自動化測試" class="headerlink" title="緩慢或不穩定的自動化測試"></a>緩慢或不穩定的自動化測試</h3><p>自動化測試確實很好，但也可能會像是肉中刺一樣。想像一下我們有個龐大的系統，他必須要用24小時來執行自動化測試，這樣重構就一點都不有趣。我們確實可以找到什麼地方出錯，必知道該修哪裡，但這個回饋迴圈太長。分鐘級非常好、小時級可以接受、若是天級別那自動化測試就沒什麼用。</p>
+<p>另一個不好的案例是不穩定的測試，「在我機器上可行」是個常見的藉口，但這很難被接受。不穩定的測試會讓人瘋掉，這次測試失敗是因為我們真的做錯了還是因為測試不穩定？我們能接受這次測試失敗依然發布嗎？</p>
+<p>坦白說，Apptio Targetprocess這兩個問題都有過。緩慢的測試可以用加開機器來暫時解決，現在我們有60台虛擬機來跑所有的測試，但整個測試仍然需要90分鐘 (包含單元測試、整合測試和UI的功能測試)。我們開發了一個內部系統用來和Jenkins、Git和Apptio Targetprocess。</p>
+<p>不穩定的測試極難解決，一些功能的自動化測試有時會不穩定而且很難定位出根源。我們花了大量時間來重寫，但仍然沒有完全解決。</p>
+<p>系統複雜度會讓自動化測試更難寫並且大幅減緩整個開發步調，所以這裡有個討厭的迴圈。</p>
+<h3 id="牛仔編程"><a href="#牛仔編程" class="headerlink" title="牛仔編程"></a>牛仔編程</h3><p>很多開發者都不喜歡流程，也許有些喜歡，但一般來說大部分開發者都喜歡自由、不喜歡規則。有經驗的開發者瞭解有些規則是確實需要的。牛仔開發者只是忽略開發流程並用自己想要的方式開發，這不總是壞的，如果我們是單獨工作或在一個小團隊，這可以接受。但在任何一個正式的開發團隊，不受控的開發會導致更多複雜度和混亂。</p>
+<p>牛仔開發者試著取巧並儘可能快速開發，我曾經是個牛仔，我喜歡看到東西被實作出來並且犧牲品質。現在我了解良好工程實踐的重要，並且知道牛仔編程會產生的問題。</p>
+<p>在任何一個超過20人的公司，都應該要有一個定義好的開發流程。舉例來說，極限編程(XP)就是一個高度訂製的流程，這需要大量精力去關注流程，但最終可以繳出不錯的開發步調和軟體品質。</p>
+<h2 id="短期加速"><a href="#短期加速" class="headerlink" title="短期加速"></a>短期加速</h2><p>有時候，我們的確需要一個短期加速開發的手段。舉例來說，我們有個重要的發佈會或者重要的客戶指定發布的時間。從商業的角度來說，這也許可以為了速度而犧牲品質。</p>
+<p>但必須要知道，天下沒有白吃的午餐，短期加速有可能會造成長期減速。</p>
+<p><img src="/images/2023-09-27-20-24-02.png"></p>
+<h3 id="死線"><a href="#死線" class="headerlink" title="死線"></a>死線</h3><p>死線是設定一個目標，這個目標通常是發布新功能，我從來沒聽過死線是為了償還技術債或架構優化的，死線是利用時間壓力推進我們達成功能目標。我們取巧、寫沒那麼好的程式並且測少點，這很明顯都會導致技術債增加與系統複雜度上升。</p>
+<p>更有甚者，死線往往會開啟亂做模式，只是為了把東西交出去，這會大大增加技術債，因此，死線只能用在短線衝刺，且要慎重執行。</p>
+<h3 id="死線和迭代開發"><a href="#死線和迭代開發" class="headerlink" title="死線和迭代開發"></a>死線和迭代開發</h3><p>我想要分享一個關於敏捷開發滿有爭議的想法：「迭代開發是一串小的死線」。的確，時間區間代表我們必須在迭代時限內完成一組工作，想想看，這不就跟一個大死線的概念一樣嗎？不，不見得，但有點相似。如果團隊答應要在一個sprint內完成9個user story，團隊會試著達成目標，正確的做法是減少開發範圍和拋棄那些無法滿足品質的項目。</p>
+<p>但是Scrum對需求交付有要求，這就會帶來心理壓力，人們會試著取巧即便是小範圍。就像我們知道的，這不總是不好，但需要留意這可能會適得其反。</p>
+<h3 id="加班"><a href="#加班" class="headerlink" title="加班"></a>加班</h3><p>一個最簡單又明顯的增加生產力作法就是工作久一點，透過做久一點我們可以完成更多東西並更早發佈，是嗎？Jason Fried認為這完全錯了：「加班不只不必要而且有點愚蠢，加班不代表你可以顧到更多或完成的更多，只代表你做久一點，加班製造的問題遠比解決的多。首先，超時工作無法長久，當燃盡(職業倦怠)來臨時(總是會來的)，打擊會更大。」</p>
+<p>適度加班是可以的，當我們為了加速發佈做最後衝刺時，在2-4週多20%工時也許可行，但長遠來看，這樣很傷。</p>
+<p>在Apptio Targetprocess，我們不加班，從不。唯一極少的例外是生產環境出問題或bug卡住後續進度時。</p>
+<h3 id="熱心工作"><a href="#熱心工作" class="headerlink" title="熱心工作"></a>熱心工作</h3><p>熱心是好的，熱心工作的人真的會顧好他們的工作，他們會盡可能寫出好程式、發明優秀解法並推動事務向前。每個雇主都想要盡可能的網羅熱心工作的人。</p>
+<p>熱心工作不總是正面的，熱心工作的人總會嘗試做的更多，在工作&#x2F;生活平衡上會碰到困難，職業倦怠會發生的，因此更好的情況是持續保持在一個平衡狀態。否則，可能會有健康問題、心理問題、家庭問題和喪失動力。</p>
+<p>熱心工作是好的，可以加速專案進行，但需要用一些非工作活動平衡一下。</p>
+<h2 id="專注工作"><a href="#專注工作" class="headerlink" title="專注工作"></a>專注工作</h2><p>你每天工作會被打斷幾次？軟體開發者需要深度專心和集中，寫程式會在腦海中建立龐大的模型，每次被打斷都會破壞模型構建的過程，還必須要花時間重建。</p>
+<p>專注工作指的是撇開所有浪費時間的活動並幫助開發者進入心流，讓我們看看哪些會打斷人們進入專注模式。</p>
+<p><img src="/images/2023-09-27-20-26-27.png"></p>
+<h3 id="不穩定的團隊-x2F-人員輪調"><a href="#不穩定的團隊-x2F-人員輪調" class="headerlink" title="不穩定的團隊&#x2F;人員輪調"></a>不穩定的團隊&#x2F;人員輪調</h3><p>團隊的穩定性會如何影響生產力有點不太明確，直覺上我們會認為穩定的團隊生產力比較好，這是對的。Rally做過一個實驗表明：「保持團隊長時間不變可以多出60%的生產力，團隊會有更高的可預測性和反應力。」</p>
+<p>為什麼？因為每個團隊都有一個生命週期，Tuckman定義了<a href="%5Bhttps://en.wikipedia.org/wiki/Tuckman's_stages_of_group_development%5D(https://en.wikipedia.org/wiki/Tuckman's_stages_of_group_development)">團隊構成的四個階段</a>，團隊明顯是在最後一個階段有著最高生產力。如果我們輪調團隊成員，那就會打破團隊構建的生命週期，整個週期要重來一次。最糟的情況是，團隊可能因為不斷輪調根本走不到最後一個階段。</p>
+<p>有人提出可以在結隊編程中去輪調組員，讓每一天都與不同的人搭配，這真的會好嗎？我們實際在Targetprocess嘗試，結果糟透了，現在我知道為什麼了。首先，每個人都有不同的偏好，有些人在某些編隊中會沒那麼有生產力；其次，每天輪調會很難快速建立好的默契，就像是不斷打破上面提到的四個階段，這做法完全無法走到最後階段。</p>
+<p>那穩定的團隊在別的領域表現如何？例如足球。這裡有份<a target="_blank" rel="noopener" href="https://www.professormarkvanvugt.com/images/files/DoesStabilityFosterTeamPerformance.pdf">調查報告</a>，他的結論很明確：「在職業足球比賽中，穩定的團隊會通過促進認知和身體合作來提高團隊表現。」</p>
+<p>差不多一年前，我們決定組建四個穩定團隊，他們工作三個月後，有兩個團隊明顯表現比較好，另外兩個就很一般。我們決定重新構建這兩個團隊，現在看來那是一個非常好的決定，現在四個團隊都展現了不錯的生產力，但他們也花了數個月才真正進入最後一個構成階段。</p>
+<h3 id="開放空間"><a href="#開放空間" class="headerlink" title="開放空間"></a>開放空間</h3><p>我不喜歡開放空間，在持續有雜音的環境下真的很難讓人專注。就像我們已經討論過的，穩定團隊比較好，穩定團隊通常相對獨立也不會太大，在我們公司一個團隊人數約是6人。團隊內部的討論會很密集，但是與其他團隊溝通就沒這麼頻繁。</p>
+<p>這表示每個團隊都應該有個獨立的空間 (有牆隔開)。</p>
+<p>在一個典型的開放空間，許多人會在這個區域，我們會聽到來自四面八方的聲音，人來人往，而我們無可避免地會因為一些小動作而分心 (人類會試著專注在移動的物體，這是我們古老的生物天性)。電話響了、有人在吃餅乾、有些隔著桌子的熱烈討論、人們互相打招呼，很熟悉對吧？這樣的環境很難保持專注。唯一的辦法是戴上耳機然後把聲音開大、很大、非常大，我會去買一個昂貴的抗噪耳機。</p>
+<p>在Apptio，我們有許多小房間讓6-8個人一起工作，電話響的不會這麼頻繁，會有更少的環境音。大部分的討論都很重要，滲透式溝通（osmotic communication）更容易達成。白板就在牆上，大部分的熱烈討論都是相關且立即的。</p>
+<p>我認為這樣的安排是最好的。確實私人辦公室最容易專注，但是會破壞溝通，人們會懶得起身去問問題，所以如果能馬上問到人，這會有顯著差別。就我來說，有個團隊空間是最好的平衡。</p>
+<h3 id="即時通訊-x2F-通知等"><a href="#即時通訊-x2F-通知等" class="headerlink" title="即時通訊&#x2F;通知等"></a>即時通訊&#x2F;通知等</h3><p>通訊服務和各種通知毫無疑問是專注殺手，有東西從螢幕右上角跳出來，然後我們會花費心力去追蹤他，專注度就丟失了。一個紅色氣泡出現在Skype的圖標上，我們被迫去點開那則訊息，專注度就丟失了。我打賭你一定都沒注意到這些中斷，這些是很小但長期持續的，已經嵌入到每天的工作中。事實是，這些微小的中斷危險到能把有生產力的一天變成毫無生產力。我們查閱、回覆然後試著重新專注，不斷循環，最終一天只能回覆一些email、一些Skype的討論、寫了幾行code，始終試著要專注。</p>
+<p>如何對抗這些？當你真的需要保持專注並寫些程式的時候，關掉email、關掉Skype，關掉所有會通知的服務。看到Twitter的新回覆或Facebook的狀態通知很必要嗎？我相信不是，那就都關掉。</p>
+<p>聽起來簡單，但是實際嘗試會發現這些習慣很難改變，有時候我們想要問個問題就會打開Skype，問完問題卻沒關掉，然後繼續被新通知打斷，我深刻了解這個處境，因為我也經歷過。</p>
+<p>在Apptio，我們很仰賴Skype，有很多對話群組在上面，每一個團隊都有一個對話，也有公司用的、產品用的、業務用的、運維用的，諸如此類。</p>
+<p>看起來這些都很必要，但訊息量非常巨大，我不知道該怎麼系統面的解決這個問題，我們需要這些溝通管道但我們每天都持續被這些中斷專注。</p>
+<p>一個好的溝通頻道是非常任務導向的，最好的情境是一個人收到訊息就代表他真的需要做些什麼，但是，很難定義這樣一個群組，較小的任務導向群組也許會比許多一般性的頻道有用。我們最近換到Slack，他有更好的溝通系統，會比較少雜訊，但這依然是個負擔。</p>
+<h3 id="多工"><a href="#多工" class="headerlink" title="多工"></a>多工</h3><p>有兩種多工：當你在寫程式並一邊講電話，或者是當你同時有很多件工作輪著做。第一種明顯是件壞事，但第二種同樣也很糟糕，但即使這樣我們依然持續這樣做。我個人每天都會做好幾件事，我知道不應該但我至今依然無法專注在一件事上，Context switch會輕易扼殺生產力。</p>
+<p>這個問題要如何解決？Context switch應該要盡可能減少，最好的情境是可以把一件事做到好再換到下一件事。說起來簡單，但很難做到，我想可能需要一些手段，目前有一些<a target="_blank" rel="noopener" href="https://faculty.washington.edu/wobbrock/pubs/gi-12.02.pdf">科學研究</a>有提供類似幫助。</p>
+<p>另一個有效的替代方案是把工作切分成小的批次，我已經聽過很多人利用番茄工作法取得不錯的成果，儘管我還沒試過。</p>
+<h2 id="重工"><a href="#重工" class="headerlink" title="重工"></a>重工</h2><p>任何重工都肯定會減緩開發速度，但要完全不重工是不可能的，我們只能試著減少。</p>
+<p><img src="/images/2023-09-27-20-30-51.png"></p>
+<p>重工主要來自三個地方：</p>
+<ol>
+<li>Bug</li>
+<li>不明確的需求</li>
+<li>做錯事</li>
+</ol>
+<p>讓我們從Bug開始。</p>
+<h3 id="Bugs"><a href="#Bugs" class="headerlink" title="Bugs"></a>Bugs</h3><p>我無法想像沒有bug的軟體。開發者通常不愛測自己寫的程式，大部分的開發者也不是很專精測試，因此bug是無可避免的，所以才會有QA協同工作，希望能夠更早找到bug並修正。</p>
+<p>更早找到bug非常重要，因為這時候開發者的記憶還很鮮明，能夠更快修正，一旦經歷一個很長的測試週期 (超過一週) ，那就會顯著降低修正的速度。一週就足以忘記程式碼的某些部分，而且這時會手上會有別的工作而開始context switch。</p>
+<p>要修正在生產環境找到的bug是最昂貴的，通常我們會收到來自客戶的email告知有些奇怪行為，接著花費些時間溝通，試著復現然後加入代辦事項清單。然後就有人會為了排期而詢問更多細節，接著開發者修正，與QA溝通，諸如此類的流程。這整個過程有龐大的開銷，就只是因為有個bug在生產環境被發現。</p>
+<h3 id="不明確的需求"><a href="#不明確的需求" class="headerlink" title="不明確的需求"></a>不明確的需求</h3><p>大部分的bug都是因為不明確的需求，通常，開發者閱讀規格書、問了些問題就開始進行開發，沒過多久就會發現規格書裡有些不明確的描述，開發者通常也沒投入心思或者PO沒能力當下回答，因此開發者只能根據經驗猜測，通常這些猜測會是錯的，導致重工。讓我們快速看一下最理想的解法。</p>
+<h3 id="UX融入開發"><a href="#UX融入開發" class="headerlink" title="UX融入開發"></a>UX融入開發</h3><p>首先，開發者應該了解一個功能的背景。我們不應該就丟一份規格書然後等一個月後拿到結果，開發者必須要了解客戶面對的真正問題以及為什麼是根據規格書的方式解決。以下有些作法可以解決這情境：</p>
+<ul>
+<li>開發者可以在第一時間就參與UX設計，這可以幫助他們了解客戶情境以及為什麼解法是這樣。</li>
+<li>每個功能或使用者故事都應該有個「啟動會議」，這個會議的目的是同步每個人(開發者、QA、PO)的想法，功能會被深入討論，也會檢視可能的問題，開發者問出所有的問題。在Apptio也有類似的會議，而且成效斐然，大部分啟動會議都會伴隨解法改變。</li>
+<li>寫出好的規格書 (不太可能)。</li>
+</ul>
+<h3 id="規格書"><a href="#規格書" class="headerlink" title="規格書"></a>規格書</h3><p>好的規格書非常稀少，明顯的，好的規格書可以更好了解整個解法、減少bug、減少重工和省更多時間。</p>
+<p>總的來說，有很多方法可以向人們描述解法，但視覺化在大多數情況下都是最好的。下面這張圖展示了所有方法，橫軸表示寫需求書需要費的工，而縱軸是技術價值。</p>
+<p><img src="/images/2023-09-27-20-31-49.png"></p>
+<h3 id="做對的事"><a href="#做對的事" class="headerlink" title="做對的事"></a>做對的事</h3><p>Bug很爛，那沒人用的功能呢？想像一下，設計、開發、測試投入的時間都白費了，我個人在Targetprocess做過許多功能都幾乎沒人用。</p>
+<p>如何做對的事？沒有一個簡單的解法，很難真的知道客戶要什麼，更別說要知道他們真的用到什麼，但依然有許多可以了解客戶需求的方法。</p>
+<h4 id="溝通管道"><a href="#溝通管道" class="headerlink" title="溝通管道"></a>溝通管道</h4><p>提供客戶一個非常簡單就能給予回饋的方法，有許多服務都做的不錯，例如：UserVoice或Desk.com。</p>
+<h4 id="用量統計"><a href="#用量統計" class="headerlink" title="用量統計"></a>用量統計</h4><p>要如何知道哪些功能是熱門的哪些沒在用？在每一個功能實作中，思考一下用量指標是很有幫助的。我們如何知道一個功能成功？有多少人每天用？這些指標會幫助我們驗證當初的假設，例如「我相信這個功能會有50%的用戶每天用」。因此，我們可以從中學到教訓，並在未來作出很好的選擇。</p>
+<h4 id="功能排名模型"><a href="#功能排名模型" class="headerlink" title="功能排名模型"></a>功能排名模型</h4><p>你如何知道下一個成功的功能是什麼？PO的直覺通常不是最好的。<a target="_blank" rel="noopener" href="https://www.lesswrong.com/posts/CKW8c2Bngz9yXibSk/statistical-prediction-rules-out-perform-expert-human">簡單的線性模型優於專家模型</a>，因此請使用他。創建一個簡單的模型，用這模型對功能排序，然後在幾個功能上驗證並修正，最後信任他。我們花了幾個月的時間在Targetprocess中建立了排名模型，查閱了許多資料、討論了優先級、蒐集客戶的回饋，最終創建了一個大家都相信的好模型。</p>
+<p>這個模型的所有參數大部分都符合我們的直覺，但也有一些特別的經驗的參數是當初沒想到的，我們討論了這些參數並修改了我們的模型，但我不想在這講太多細節，就提供這個公式。</p>
+<blockquote>
+<p>Feature Score &#x3D; 30% * Selling Point + 15% * Usage Spread + 15% * Customers Votes + 15% * Feature Size + 15% * Pain + 10% * Usage Frequency</p>
+</blockquote>
+<p>最高得分是100%，有兩個我們當初認為最重要的參數落在中間，他們不如我們想的重要，儘管如此，我們做出這個模型了。但你知道嗎？一開始這個模型的反應很冷，沒多少人願意用，但現在我們可以做出最受客戶歡迎的功能了。</p>
+<h3 id="UX回饋"><a href="#UX回饋" class="headerlink" title="UX回饋"></a>UX回饋</h3><p>從客戶那收到主要功能和UX改變的回饋是非常有價值的，建立原型、分享草圖、執行A&#x2F;B測試，從中收集資料並分析他們。</p>
+<p>我得要說，如果解決了這些問題，那重工的機會就大幅降低了。</p>
+<h2 id="更多人-x2F-更多開發團隊"><a href="#更多人-x2F-更多開發團隊" class="headerlink" title="更多人&#x2F;更多開發團隊"></a>更多人&#x2F;更多開發團隊</h2><p>大型公司總是做的比較快、發佈比較快，對嗎？不完全是。小公司有更好的單位時間，然而大公司有更好的整體時間，但通常，這是有代價的。讓我們把一個六人團隊放到兩間不同的公司，我保證這個團隊在小公司會做的更快。但在大公司，他們有數十個團隊，因此整體開發速度和產出會更高。</p>
+<p><img src="/images/2023-09-27-20-35-48.png"></p>
+<p>更好的情況是我們在人數成長的過程中試著保持更高的單位時間，更多的人表示更多的協調、更多的會議，更多的開銷。</p>
+<h3 id="聘僱"><a href="#聘僱" class="headerlink" title="聘僱"></a>聘僱</h3><p>新的人加入開發團隊長期來看會提昇開發速度，但是這過程無可避免的會影響當下的開發速度。首先，一些開發者會被技術面試打擾，假設想要雇用一個優秀人才，那就會有許多面試而且大多數都會一無所獲。我相信真的招募到一個人需要10-40小時的面試。</p>
+<p>其次，新進人員需要被指導，有人需要幫助他們了解事情是如何運作的。這個過程會花費1-3的月，在這期間開發者會沒這麼有生產力。我相信一個新進人員要經過六個月才有能力全速工作。</p>
+<p>這代表什麼？如果我們有一個很緊迫的死線 (例如六個月)，那麼別招募人，這會讓開發速度變慢。如果沒有明確的死線並且準備好現在能減少產出但未來會加速，那麼招募吧！</p>
+<p>有個有趣的問題：我們能招募新人但不打斷開發者嗎？我們能用別種方式取代技術面試嗎？如何用更少的時間指導但獲得一樣的結果？</p>
+<h3 id="合作工作"><a href="#合作工作" class="headerlink" title="合作工作"></a>合作工作</h3><p>大型公司不怎麼高效，更多人意味著更多協調。通常，解法是更多管理階層、更多會議、更多黨爭，也就是更少生產力和一般的開發速度。</p>
+<p>我不喜歡組織太多階層，我喜歡扁平化組織和自主的跨功能團隊。</p>
+<p>在Targetprocess，我們有5個完全獨立的開發團隊，每個團隊都有PO、開發者、QA和設計師 (有時會共享)，這些開發團隊各自負責自己的功能並對那些功能下各種決定。</p>
+<p>問題在於產品本身必須要足夠模組化才能由獨立團隊各自負責。模組間的關係要盡可能少，否則整合會是個問題，Targetprocess還沒完全做到。</p>
+<p>公司架構會長的像產品架構，我對IBM和Atlassian的產品架構有點好奇，IBM真的用繼承模式嗎？Atlassian更多的是倚賴association和composition嗎？也許彈性且扁平的公司會造出彈性的產品，如果真是這樣，那公司結構的確是大大影響產品成功。</p>
+<h2 id="虛耗和沒價值的附加活動"><a href="#虛耗和沒價值的附加活動" class="headerlink" title="虛耗和沒價值的附加活動"></a>虛耗和沒價值的附加活動</h2><p>我們已經討論過各種分心，例如Facebook或Skype。但其實還有很多危險的活動看起來像是工作但其實沒產生任何價值。</p>
+<p><img src="/images/2023-09-27-20-37-39.png"></p>
+<h3 id="會議"><a href="#會議" class="headerlink" title="會議"></a>會議</h3><p>大多數會議糟透了。以下是一個測試會議是否夠好的作法：「試想一下，你有多常感到那是個好會議。」</p>
+<p>我賭一定不常，越大的公司會有越多的會議，小公司可以沒有任何會議。每個會議都會是個浪費，每天的站會？當然。UX會議？有何不可。我可以簡單的想像一個完全浪費的每日會議，每個人都在講自己的狀態，但沒人在乎別人在說什麼。我參與過許多UX會議，那些都超級無聊也完全沒有產出。</p>
+<p>有許多書籍在講有效的會議，但你知道嗎？那些真的有用。每一個會議都應該有個議程、準備好的參與者、開誠布公的討論，並有一個清楚的結論。</p>
+<p>我們無法拋棄所有的會議，好的會議會很有趣也有幫助，這是一個可以專注和其他人討論問題的地方。我想會議最沒用的是發想，但在篩選想法上會議很有幫助，腦力激盪會議不是產生新想法最好的方式，我相信獨處花時間專注思考才是。</p>
+<p>要想產生新想法，需要花時間思考。相信人們毫無準備的參與一個會議還能解決問題是很天真的。</p>
+<h3 id="工作中運動"><a href="#工作中運動" class="headerlink" title="工作中運動"></a>工作中運動</h3><p>我希望更多公司能夠信任人，我希望類似下述情境可以很稀少。</p>
+<blockquote>
+<p>管理者在早上11點到茶水間看到兩個開發者在泡咖啡、互相愉快的聊天，管理者變得不爽並大吼：「你們在這幹嘛？我們這週五有個死線！」</p>
+</blockquote>
+<p>開發者就把咖啡倒掉快速離開。太恐怖了，工作不應該是只有寫程式、測試、發版這麼無聊的事。創造性的工作需要實際的活動、暫停和閒談。如果在辦公室能夠有桌球間、健身房、韻律教室就太好了 （當然要有淋浴間)。運動可以紓緩壓力並讓人產生更多生產力。</p>
+<p>你真的覺得人們會把工作時間完全拿去運動或其他活動嗎？如果是，那你問題大了。也許他們已經厭倦上個月的工作或者你雇用錯人，無論如何，這都表示哪裡出了問題。</p>
+<p>所以工作中運動是好的，也許你會覺得這些時間是浪費，實則不然。</p>
+<h3 id="工作中學習"><a href="#工作中學習" class="headerlink" title="工作中學習"></a>工作中學習</h3><p>每間軟體公司都希望人們去學新東西，儘管如此，不是很多公司都願意提供機會讓他們學。我們在前面的章節討論過學習，但是一些公司認為工作中學習是一種浪費，認為學習本身不會產生價值，所以學習是沒有任何附加價值的。在軟體開發中，我們應該專注在聰明的做而不是努力的做，根據這個觀點，在工作中學習是一種手段。</p>
+<p>我們能計量橘色星期五、書籍、研討會和side project的產出嗎？這真的很難。這些產出是長遠的 (以年計)，也沒有一個有效的模型可以把知識量化成金錢。</p>
+<h2 id="工作生活平衡"><a href="#工作生活平衡" class="headerlink" title="工作生活平衡"></a>工作生活平衡</h2><p>這節會很短。我們已經談論過職業倦怠，軟體開發是一個需要不斷思考的活動，當軟體中有一個複雜的問題，就會到哪都想著他。當和伴侶走在一起會突然有靈感，當洗澡時會靈光乍現，在任何不適當的時機大腦都會拼命工作。學習如何切換是很重要的，運動、旅行、瑜伽或任何興趣都是很好的選擇。</p>
+<p><img src="/images/2023-09-27-20-39-51.png"></p>
+<p>公司應該鼓勵人們擁有些興趣並且給予支援，這也是運動那章節提到的。</p>
+<p>應該由上層領導者發起不加班規則，如果拼命工作，在某個臨界點一到，工作會瞬間熄火。</p>
+<h1 id="回顧"><a href="#回顧" class="headerlink" title="回顧"></a>回顧</h1><p>我想加強幾個重點。</p>
+<p><strong>軟體開發步調&#x2F;生產力&#x2F;速度是複雜又多方牽扯的概念</strong>，沒有一個簡單的解決方案，不是大吼「做快點！」就會快，也沒有捷徑可走，光只有專注在有附加價值的活動上也不夠。唯一的解法是對公司、開發流程、人們、工具等深入思考，建立一個模型。</p>
+<p>我對於間歇開發的概念有許多想法，這感覺很適合我並且也是速度和耐久的最佳平衡，馬拉松和高速衝刺混合在一起就多了許多新方向可以探索。</p>
+<p>對於這個模型還有幾個話要說。</p>
+<p>在間歇模型上再加入權重會很有趣，一些活動明顯影響開發速度，然而另外些就沒這麼強效。每間公司都有獨一無二的權重，但如果我們很難定義他們，那麼先專注在那些最重要的事。</p>
 
     </div>
 

@@ -11,15 +11,6 @@
   </url>
   
   <url>
-    <loc>https://wirelessr.github.io/Architecture/8-Ways-to-Crank-Up-Speed-in-Software-Development/20230927/</loc>
-    
-    <lastmod>2023-09-27</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://wirelessr.github.io/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/</loc>
     
     <lastmod>2023-09-27</lastmod>
@@ -75,6 +66,15 @@
   
   <url>
     <loc>https://wirelessr.github.io/Career/What-is-Staff-Engineer/20230425/</loc>
+    
+    <lastmod>2023-09-27</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/Architecture/8-Ways-to-Crank-Up-Speed-in-Software-Development/20230927/</loc>
     
     <lastmod>2023-09-27</lastmod>
     
@@ -196,13 +196,6 @@
 
   
   <url>
-    <loc>https://wirelessr.github.io/categories/Architecture/</loc>
-    <lastmod>2023-09-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://wirelessr.github.io/categories/Elasticsearch/</loc>
     <lastmod>2023-09-27</lastmod>
     <changefreq>weekly</changefreq>
@@ -211,6 +204,13 @@
   
   <url>
     <loc>https://wirelessr.github.io/categories/Career/</loc>
+    <lastmod>2023-09-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://wirelessr.github.io/categories/Architecture/</loc>
     <lastmod>2023-09-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
