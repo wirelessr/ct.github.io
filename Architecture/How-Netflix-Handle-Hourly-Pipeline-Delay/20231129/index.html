@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="UwHbW2CTRb9hu_gAS_JoTXH5d5V7EK1LW8M3ReqlD9c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一文看懂Netflix處理hourly pipeline延遲這篇是翻譯Netflix最近釋出的Psyberg系列文，同時也會補充一些相關的資訊。 最主要的出處是以下三篇：  Streamlining Membership Data Engineering at Netflix with Psyberg Diving Deeper into Psyberg: Stateless vs Statefu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Netflix Handle Hourly Pipeline Delay">
+<meta property="og:url" content="https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/index.html">
+<meta property="og:site_name" content="CT譯站">
+<meta property="og:description" content="一文看懂Netflix處理hourly pipeline延遲這篇是翻譯Netflix最近釋出的Psyberg系列文，同時也會補充一些相關的資訊。 最主要的出處是以下三篇：  Streamlining Membership Data Engineering at Netflix with Psyberg Diving Deeper into Psyberg: Stateless vs Statefu">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-22-32.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-25-46.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-26-45.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-28-00.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-28-33.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-29-18.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-30-27.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-31-09.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-32-12.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-32-52.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-33-20.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-35-11.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-35-45.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-36-21.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-37-01.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-37-45.png">
+<meta property="og:image" content="https://wirelessr.github.io/images/2023-11-29-10-38-10.png">
+<meta property="article:published_time" content="2023-11-29T02:17:05.000Z">
+<meta property="article:modified_time" content="2023-11-29T02:43:10.696Z">
+<meta property="article:author" content="CT Wu">
+<meta property="article:tag" content="Architecture">
+<meta property="article:tag" content="Data">
+<meta property="article:tag" content="Netflix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wirelessr.github.io/images/2023-11-29-10-22-32.png">
+
+
+<link rel="canonical" href="https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/","path":"Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/","title":"How Netflix Handle Hourly Pipeline Delay"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>How Netflix Handle Hourly Pipeline Delay | CT譯站</title>
+  
+
+
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "gqdi4dm6in");
+</script>
+
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9820460770755862"
+     crossorigin="anonymous"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CT譯站</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">各種軟體/架構相關文章的翻譯</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E6%96%87%E7%9C%8B%E6%87%82Netflix%E8%99%95%E7%90%86hourly-pipeline%E5%BB%B6%E9%81%B2"><span class="nav-number">1.</span> <span class="nav-text">一文看懂Netflix處理hourly pipeline延遲</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E6%83%85%E6%8F%90%E8%A6%81"><span class="nav-number">2.</span> <span class="nav-text">前情提要</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E8%83%8C%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">問題背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%97%9B%E9%BB%9E"><span class="nav-number">4.</span> <span class="nav-text">痛點</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%95%8F%E9%A1%8C%E6%83%85%E5%A2%83"><span class="nav-number">5.</span> <span class="nav-text">問題情境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95%EF%BC%9APsyberg"><span class="nav-number">6.</span> <span class="nav-text">解法：Psyberg</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Psyberg%E5%8E%9F%E7%90%86"><span class="nav-number">7.</span> <span class="nav-text">Psyberg原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Iceberg-Metadata"><span class="nav-number">7.1.</span> <span class="nav-text">Iceberg Metadata</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#snapshots"><span class="nav-number">7.1.1.</span> <span class="nav-text">snapshots</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#partitions"><span class="nav-number">7.1.2.</span> <span class="nav-text">partitions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Psyberg-Metadata"><span class="nav-number">7.2.</span> <span class="nav-text">Psyberg Metadata</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#session"><span class="nav-number">7.2.1.</span> <span class="nav-text">session</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#high-watermark"><span class="nav-number">7.2.2.</span> <span class="nav-text">high watermark</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stateless-vs-Stateful"><span class="nav-number">8.</span> <span class="nav-text">Stateless vs Stateful</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#INIT%E9%9A%8E%E6%AE%B5"><span class="nav-number">8.1.</span> <span class="nav-text">INIT階段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Stateless-INIT"><span class="nav-number">8.1.1.</span> <span class="nav-text">Stateless INIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stateful-INIT"><span class="nav-number">8.1.2.</span> <span class="nav-text">Stateful INIT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WAP%E9%9A%8E%E6%AE%B5-Write-Audit-Publish"><span class="nav-number">8.2.</span> <span class="nav-text">WAP階段 (Write Audit Publish)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Audit%E9%9A%8E%E6%AE%B5"><span class="nav-number">8.3.</span> <span class="nav-text">Audit階段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HWM-Commit%E9%9A%8E%E6%AE%B5"><span class="nav-number">8.4.</span> <span class="nav-text">HWM Commit階段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B7%E9%AB%94%E4%BE%8B%E5%AD%90"><span class="nav-number">9.</span> <span class="nav-text">具體例子</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Psyberg%E5%B8%B6%E4%BE%86%E7%9A%84%E5%84%AA%E9%BB%9E"><span class="nav-number">10.</span> <span class="nav-text">Psyberg帶來的優點</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CT Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wirelessr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wirelessr" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://medium.com/@lazypro" title="https:&#x2F;&#x2F;medium.com&#x2F;@lazypro" rel="noopener" target="_blank">Medium</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://ithelp.ithome.com.tw/users/20146414/ironman" title="https:&#x2F;&#x2F;ithelp.ithome.com.tw&#x2F;users&#x2F;20146414&#x2F;ironman" rel="noopener" target="_blank">iThome</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="How Netflix Handle Hourly Pipeline Delay | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          How Netflix Handle Hourly Pipeline Delay
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2023-11-29 10:17:05 / 修改時間：10:43:10" itemprop="dateCreated datePublished" datetime="2023-11-29T10:17:05+08:00">2023-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="一文看懂Netflix處理hourly-pipeline延遲"><a href="#一文看懂Netflix處理hourly-pipeline延遲" class="headerlink" title="一文看懂Netflix處理hourly pipeline延遲"></a>一文看懂Netflix處理hourly pipeline延遲</h1><p>這篇是翻譯Netflix最近釋出的Psyberg系列文，同時也會補充一些相關的資訊。</p>
+<p>最主要的出處是以下三篇：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://netflixtechblog.com/1-streamlining-membership-data-engineering-at-netflix-with-psyberg-f68830617dd1">Streamlining Membership Data Engineering at Netflix with Psyberg</a></li>
+<li><a target="_blank" rel="noopener" href="https://netflixtechblog.com/2-diving-deeper-into-psyberg-stateless-vs-stateful-data-processing-1d273b3aaefb">Diving Deeper into Psyberg: Stateless vs Stateful Data Processing</a></li>
+<li><a target="_blank" rel="noopener" href="https://netflixtechblog.com/3-psyberg-automated-end-to-end-catch-up-260fbe366fe2">Psyberg: Automated end to end catch up</a></li>
+</ul>
+<span id="more"></span>
+
+<h1 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h1><p>Netflix的data pipeline有兩條，一條是純batch，一條是realtime，以下是超級high level架構。</p>
+<p><img src="/images/2023-11-29-10-22-32.png"></p>
+<blockquote>
+<p>Keystone：是data pipeline的自助平台，包含建制、設定、發布、監控等；MANTIS：是Netflix自研的Orchestrator，相當於特化版的Airflow。</p>
+</blockquote>
+<p>上圖是早期架構，後來他們也讓批次的資料源接入kafka。另外在Hadoop那已經使用Apache Iceberg作為儲存媒介。</p>
+<p>這系列文他們要處理的問題是下面那條，也就是Spark那邊怎麼處理事件延遲。</p>
+<h1 id="問題背景"><a href="#問題背景" class="headerlink" title="問題背景"></a>問題背景</h1><p>Netflix碰到的問題是他們在帳務處理上使用batch處理，不要求即時但要求精確且完整。</p>
+<p>通常，他們會讓hourly pipeline算之前time slot的資料，例如：7點整的job算5點(包含之前的)，但即便如此依然會碰到事件延遲。</p>
+<p>若是stateful (incremental) 的資料處理，遇到延遲就必須從延遲事件的event time算到最新處理到的時間區間。</p>
+<blockquote>
+<p>事件延遲為什麼會發生？系統重試、網路延遲、批次處理、系統癱瘓或上游migration等都有可能。</p>
+</blockquote>
+<p><img src="/images/2023-11-29-10-25-46.png"></p>
+<ul>
+<li>processing time：其實是指串流處理常用的event time，事件發生時間。</li>
+<li>landing time：落地時間，類似串流處理用的process time。</li>
+</ul>
+<h1 id="痛點"><a href="#痛點" class="headerlink" title="痛點"></a>痛點</h1><p>早期的解法有兩種：</p>
+<ol>
+<li>固定的回算區間 (假設大部分的遲達事件都會落在這個時間區間)。但這會導致無謂的重複計算，顯著增加ETL的處理時間和計算成本。這招的擴展性也很差，很難處理資料量體不斷變大的情況。(試想：每個小時回算過去六小時)</li>
+<li>增加告警，提示什麼時候有資料延遲，人為介入後卡住pipeline，手動執行backfill。這招最單純，所以也是Netflix最常用的手段，但是重算資料和找到所有對應的下游非常痛苦。(試想：你不是這個pipeline的作者)</li>
+</ol>
+<h1 id="問題情境"><a href="#問題情境" class="headerlink" title="問題情境"></a>問題情境</h1><p><img src="/images/2023-11-29-10-26-45.png"></p>
+<p>假設要處理三種事件：註冊、換方案和取消方案。有些註冊事件應該在3點發的卻延遲到了6點。系統檢測到延遲並發出告警，on-call的DE 會按照以下步驟處理。</p>
+<ol>
+<li>查看稽核紀錄找到延遲事件以及被影響的pipeline。在這個範例中我們會知道註冊事件應該要在三點的事實表。</li>
+<li>停掉所有受影響的pipeline以及下游，並將註冊事件補進事實表。</li>
+<li>找出需要重跑的partition並且從那個partition跑到最新的。DE會注意到三點到六點的資料都要重跑。這個步驟很重要，因為少了註冊事件會造成接下來對應帳戶的處理都受影響。</li>
+<li>現在DE花了許多時間來解決告警，那些pipeline看起來會像是有點延遲，接下來必須要發起追趕的 job 把狀態追到最新狀態(六點以後)。</li>
+</ol>
+<blockquote>
+<p>純手工、耗時、加班、認知負載，簡單的說，痛苦到不行。</p>
+</blockquote>
+<h1 id="解法：Psyberg"><a href="#解法：Psyberg" class="headerlink" title="解法：Psyberg"></a>解法：Psyberg</h1><blockquote>
+<p>Psyberg是Netflix基於Apache Iceberg開發的自動化處理框架。</p>
+</blockquote>
+<p><img src="/images/2023-11-29-10-28-00.png"></p>
+<p>Psyberg其中一個重要的功能就是能夠偵測和管理延遲事件，這樣就可以讓pipeline不需要人工介入也能夠高效又精準的處理延遲事件。整個Psyberg是用一些自己維護的metadata以及Apache Iceberg的metadata作為骨幹來做到高效的資料處理。</p>
+<blockquote>
+<p>快速科普一下Apache Iceberg：是一種開放資料表格式，可以被各大資料處理引擎調用，並在Object Storage上建立資料表，也就是俗稱的Data Lakehouse，如下圖。</p>
+</blockquote>
+<p><img src="/images/2023-11-29-10-28-33.png"></p>
+<blockquote>
+<p>再科普一下Iceberg Metadata：因為是在Object Storage上建立表結構，所以一定需要描述檔案位置的機制，Iceberg用的是Object Storage Service上的metadata機制，一來節省存取開銷、二來減少檔案遷移。</p>
+</blockquote>
+<p><img src="/images/2023-11-29-10-29-18.png"></p>
+<h1 id="Psyberg原理"><a href="#Psyberg原理" class="headerlink" title="Psyberg原理"></a>Psyberg原理</h1><p>關鍵是High Watermark的處理。</p>
+<blockquote>
+<p>High Watermark是指pipeline最後一次更新的時間，這主要用來偵測從上一次更新後有沒有新change。</p>
+</blockquote>
+<h2 id="Iceberg-Metadata"><a href="#Iceberg-Metadata" class="headerlink" title="Iceberg Metadata"></a>Iceberg Metadata</h2><p>Iceberg有兩個重要的metadata表：snapshots和partitions。</p>
+<h3 id="snapshots"><a href="#snapshots" class="headerlink" title="snapshots"></a>snapshots</h3><p>snapshots表紀錄基本的metadata，例如：</p>
+<ul>
+<li><p>快照的建立時間</p>
+</li>
+<li><p>執行操作的種類</p>
+</li>
+<li><p>分區建立&#x2F;更新的summary</p>
+</li>
+</ul>
+<p>這些細節讓Psyberg可以追蹤不同的操作並且釐清從上一次更新到現在的改變。舉例來說。</p>
+<p><img src="/images/2023-11-29-10-30-27.png"></p>
+<h3 id="partitions"><a href="#partitions" class="headerlink" title="partitions"></a>partitions</h3><p>partitions表值得注意的是他儲存了以下資訊：</p>
+<ul>
+<li><p>在資料表中分區鍵的資訊</p>
+</li>
+<li><p>特定分區中的分區鍵範圍</p>
+</li>
+</ul>
+<p><img src="/images/2023-11-29-10-31-09.png"></p>
+<p>透過這兩種metadata表，將其組合成一包反序列化格式，這有助於Psyberg了解延遲事件而不用去查實際資料。</p>
+<h2 id="Psyberg-Metadata"><a href="#Psyberg-Metadata" class="headerlink" title="Psyberg Metadata"></a>Psyberg Metadata</h2><p>除了，iceberg的metadata，Psyberg還維護了自己的metadata表：session和high watermark，這兩張表都基於 job 的名稱做分區以便維護各個 job 的資訊。</p>
+<h3 id="session"><a href="#session" class="headerlink" title="session"></a>session</h3><p>session表維護每一個pipeline的執行狀態，包含：</p>
+<ul>
+<li><p>Job 分區，用於追蹤pipeline的運行資訊</p>
+</li>
+<li><p>Session ID，每一次運行的唯一標示</p>
+</li>
+<li><p>處理URI，用於識別需要載入的分區</p>
+</li>
+<li><p>“起始日期”、“起始小時”、“結束日期”和”結束小時”，分別用於事件時間和處理時間</p>
+</li>
+</ul>
+<h3 id="high-watermark"><a href="#high-watermark" class="headerlink" title="high watermark"></a>high watermark</h3><p>high watermark表在每個pipeline運行結束後會從session表中拿出相關資料。</p>
+<ul>
+<li><p>最新&#x2F;前一次的high watermark時間戳</p>
+</li>
+<li><p>最新執行的metadata</p>
+</li>
+</ul>
+<p><img src="/images/2023-11-29-10-32-12.png"></p>
+<p>這些信息對於每個 job 至關重要，因為這有助於確定要加載的數據，在處理後更新HWM，最終生成輸出信號，通知下游pipeline資料截至日期和時間，確保完整可用。同時，這也作為troubleshoot和audit用。</p>
+<h1 id="Stateless-vs-Stateful"><a href="#Stateless-vs-Stateful" class="headerlink" title="Stateless vs Stateful"></a>Stateless vs Stateful</h1><p>前面敘述了Psyberg的metadata，接著要再對問題細分，有兩種處理模式：無狀態和有狀態。</p>
+<p>理解處理資料的需求可以更了解該如何處理事件延遲。</p>
+<ul>
+<li><p>無狀態資料處理：事件只和自身有關，不會被到達順序影響。舉例來說，我們需要追蹤全部使用者的註冊數，那麼註冊事件的順序不重要，而且註冊事件彼此是獨立的。這種情境下，只需要把資料寫入事實表就好。</p>
+</li>
+<li><p>有狀態資料處理：這模式是指事件依賴數個輸入串流的順序。舉例來說，顧客的生命週期會包含數個階段，例如帳號建立、方案升降級和取消，這需要確保順序是正確的，若是有延遲事件那需要將已經處理過的事件重新處理。</p>
+</li>
+</ul>
+<p>讓我們用一個常見的工作流程：載入資料到事實表來演示這兩個模式。</p>
+<p><img src="/images/2023-11-29-10-32-52.png"></p>
+<h2 id="INIT階段"><a href="#INIT階段" class="headerlink" title="INIT階段"></a>INIT階段</h2><p>根據給進來的參數，Psyberg會算出正確的資料區間。</p>
+<p>參數如下：<br><img src="/images/2023-11-29-10-33-20.png"></p>
+<h3 id="Stateless-INIT"><a href="#Stateless-INIT" class="headerlink" title="Stateless INIT"></a>Stateless INIT</h3><p>這邊用一個紀錄註冊事件的事實表為例，這會是每小時跑，目的是把原始的註冊事件根據(landing data, hour, batch id)做分區建表。</p>
+<p>以下是一個YAML範例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">job:</span></span><br><span class="line">   <span class="attr">id:</span> <span class="string">psyberg_session_init</span></span><br><span class="line">   <span class="attr">type:</span> <span class="string">Spark</span></span><br><span class="line">   <span class="attr">spark:</span></span><br><span class="line">     <span class="attr">app_args:</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--process_name=signup_fact_load</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--src_tables=raw_signups</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_session_id=20230914061001</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_hwm_table=high_water_mark_table</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_session_table=psyberg_session_metadata</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--etl_pattern_id=1</span></span><br></pre></td></tr></table></figure>
+
+<p>從參數 (etl_pattern_id&#x3D;1) 可以看出來，這個 job 是stateless的。</p>
+<p>Psyberg也根據參數找到對應的snapshots表，用summary可以取出原始表的分區資訊。</p>
+<blockquote>
+<p>{“partitions.dateint&#x3D;20230914&#x2F;hour&#x3D;3&#x2F;batchid&#x3D;1692810122580_70666”: “added-data-files&#x3D;2,added-records&#x3D;24,added-files-size&#x3D;29839”}</p>
+</blockquote>
+<p>這些資訊解析完會記錄在 psyberg_session_f 表提供給 LOAD.FACT_TABLE 這階段使用。</p>
+<h3 id="Stateful-INIT"><a href="#Stateful-INIT" class="headerlink" title="Stateful INIT"></a>Stateful INIT</h3><p>若是事件有順序相依，那就需要用有狀態的事件處理。</p>
+<p>我們用建立一個 cancel 的事實表作為例子，這張表需要兩個上游：</p>
+<ol>
+<li><p>cancel 事件流，這表示使用者發出取消</p>
+</li>
+<li><p>儲存了所有使用者請求的事實表，這用來在帳單結算週期前取消訂閱</p>
+</li>
+</ol>
+<p>這些上游可以用來分析這些 churn 是自願還非自願。</p>
+<p>這也用類似上述的YAML，但有一些差別。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span> <span class="attr">job:</span></span><br><span class="line">   <span class="attr">id:</span> <span class="string">psyberg_session_init</span></span><br><span class="line">   <span class="attr">type:</span> <span class="string">Spark</span></span><br><span class="line">   <span class="attr">spark:</span></span><br><span class="line">     <span class="attr">app_args:</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--process_name=cancel_fact_load</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--src_tables=raw_cancels|processing_ts,cancel_request_fact</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_session_id=20230914061501</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_hwm_table=high_water_mark_table</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--psyberg_session_table=psyberg_session_metadata</span></span><br><span class="line">       <span class="bullet">-</span> <span class="string">--etl_pattern_id=2</span></span><br></pre></td></tr></table></figure>
+
+<p>因為是 etl_pattern_id&#x3D;2 所以表示是stateful。</p>
+<p>重要的是 src_tables 這項，這列出源事件流 raw_cancels，另外 processing_ts 表示是事件時間。這和另一個選項 event_landing_ts 的用途不同。</p>
+<p>透過捕捉 raw_cancels 和 cancel_request_fact 以及指定 processing_ts 可以釐清到底哪些事件遲到。</p>
+<p>和前述的stateless處理一樣，從參數中找出對應的分區資訊並轉成以下格式。</p>
+<p><img src="/images/2023-11-29-10-35-11.png"></p>
+<blockquote>
+<p>來源是partitions表，會列出 event_processing_ts 的 min 和 max 以及 event_landing_ts 的 min 和 max。</p>
+</blockquote>
+<blockquote>
+<p>VTTS &#x3D; Valid To TimeStamp</p>
+</blockquote>
+<p>有了 processing_ts 的 min 就可以找出遲達事件在哪以及要從哪個分區開始重跑。</p>
+<p><img src="/images/2023-11-29-10-35-45.png"></p>
+<blockquote>
+<p>1694704259000是UTC Sep. 14, 2023 15:10:59</p>
+</blockquote>
+<p>另外，也可以從所有上游的VTTS找出要重跑的上限在哪。</p>
+<p><img src="/images/2023-11-29-10-36-21.png"></p>
+<p>Psyberg透過這些metadata計算就可以知道該怎麼自動處理事件了，這些結果會存進 psyberg_session_f。</p>
+<h2 id="WAP階段-Write-Audit-Publish"><a href="#WAP階段-Write-Audit-Publish" class="headerlink" title="WAP階段 (Write Audit Publish)"></a>WAP階段 (Write Audit Publish)</h2><blockquote>
+<p>快速科普一下WAP，WAP是Iceberg的一種設計模式。因為Iceberg可以寫入資料但不公開 (目的一樣是為了減少Object Storage的存取)，所以可以先由pipeline把資料寫入，然後發起驗證流程，確認沒問題再公開資料。</p>
+</blockquote>
+<p><img src="/images/2023-11-29-10-37-01.png"></p>
+<p>當Iceberg snapshot還沒寫入時會先做驗證。在 LOAD.FACT_TABLE 會用 psyberg_session_id 和 process_name 做為參數。</p>
+<p>對於 stateless，要處理的URI會從 psyberg_session_f 讀出來，所有商業邏輯的處理以及延遲事件的處理都會在這時候解決，但這些不會直接寫入，而是會先落到uncommit snapshot (WAP pattern)。</p>
+<p>同理，stateful也是類似的流程，只是多了計算回算區間的判斷，透過這些機制就可以由Psyberg自動處理了。</p>
+<h2 id="Audit階段"><a href="#Audit階段" class="headerlink" title="Audit階段"></a>Audit階段</h2><p>在那些未發布快照上會運行很多確認流程，透過Psyberg的metadata就可以有效辨識正確性和完整性的問題，當審核完成，這些資料就會被發佈到目標表。</p>
+<h2 id="HWM-Commit階段"><a href="#HWM-Commit階段" class="headerlink" title="HWM Commit階段"></a>HWM Commit階段</h2><p>藉由Psyberg metadata，我們可以找出最新</p>
+<p>利用Psyberg metadata，我們可以找出Iceberg snapshots相關的最新時間戳。這個時間戳用於更新 high watermark表，有了新的HWM，這樣後續的pipeline就可以找出新的資料變更。</p>
+<h1 id="具體例子"><a href="#具體例子" class="headerlink" title="具體例子"></a>具體例子</h1><p><img src="/images/2023-11-29-10-37-45.png"></p>
+<p>以上是一個用戶的生命週期，我們要追蹤每個小時用戶的帳號狀態，例如啟用、升級、降級、取消。</p>
+<p>作法：</p>
+<ol>
+<li><p>建立兩張無狀態事實表：註冊、帳戶方案。</p>
+</li>
+<li><p>建立一張有狀態事實表：取消。</p>
+</li>
+<li><p>建立一張有狀態維度表：每小時讀取上面三張事實表，並產出帳戶狀態。</p>
+</li>
+</ol>
+<p>對於無狀態表，就是有新事件就append；而有狀態表則是overwrite。</p>
+<p><img src="/images/2023-11-29-10-38-10.png"></p>
+<blockquote>
+<p>假設：所有的事實表都已經處理到第5小時，之前的事件都表示延遲事件 (上圖紅2, 5, 3)。</p>
+</blockquote>
+<p>事實表的部分：</p>
+<ol>
+<li><p>對於計畫表和註冊表，因為是無狀態，所以直接把 [2, 6] 和 [3, 6] 附加在對應的事實表即可。</p>
+</li>
+<li><p>對於取消表，因為是有狀態，所以 [5, 6, 7] 都會覆寫對應的資料。</p>
+</li>
+<li><p>這種基於固定時間窗口的做法可以有效減少資料處理的量。</p>
+</li>
+</ol>
+<p>維度表的部分：</p>
+<ol>
+<li><p>根據之前介紹的算法可以得到需要回算的區間是 2-6，所以維度表需要重算 2-6 小時的資料。</p>
+</li>
+<li><p>回算目標時間區間的分區表並寫入目標表，這會最小化不必要的重新處理。</p>
+</li>
+</ol>
+<p>這樣Psyberg可以在沒有人為介入的情況下自動追上資料。</p>
+<h1 id="Psyberg帶來的優點"><a href="#Psyberg帶來的優點" class="headerlink" title="Psyberg帶來的優點"></a>Psyberg帶來的優點</h1><ol>
+<li><p>使用的計算資源大幅下降，core Spark少了90%。</p>
+</li>
+<li><p>更好的可靠度和精確度，自從Psyberg做完，我們沒再做過手工也沒再丟失資料。</p>
+</li>
+<li><p>有了固定模版，要做到類似的pipeline更加容易。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+    <!-- related posts -->
+        <h2>相關文章推薦</h2>
+        <ul class="popular-posts">
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/HTAP-learning-from-Xiaohongshu/20230505/" rel="bookmark">HTAP：從小紅書的案例學習NewSQL</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/" rel="bookmark">Uber如何做到傑出的資料品質</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/" rel="bookmark">有效提昇Elasticsearch整座集群效能的三個小技巧</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/" rel="bookmark">Shopify如何處理大促？</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/8-Ways-to-Crank-Up-Speed-in-Software-Development/20230927/" rel="bookmark">8個提昇軟體開發速度的妙方</a></div>
+            </li>
+        </ul>
+
+          <div class="post-tags">
+              <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+              <a href="/tags/Data/" rel="tag"># Data</a>
+              <a href="/tags/Netflix/" rel="tag"># Netflix</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Architecture/8-Ways-to-Crank-Up-Speed-in-Software-Development/20230927/" rel="prev" title="8個提昇軟體開發速度的妙方">
+                  <i class="fa fa-chevron-left"></i> 8個提昇軟體開發速度的妙方
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CT Wu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"wirelessr/wirelessr.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
