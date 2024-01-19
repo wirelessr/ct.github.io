@@ -130,7 +130,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
@@ -187,6 +187,96 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/" class="post-title-link" itemprop="url">Netflix如何在Kappa架構下做回填(backfill)</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-01-19 10:07:09 / 修改時間：10:10:19" itemprop="dateCreated datePublished" datetime="2024-01-19T10:07:09+08:00">2024-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Netflix的首頁是經過客製化的，會根據使用者的喜好有不同的外觀，當然，推薦影片的種類也會完全根據使用者的偏好。要做到這種程度，是因為在系統背後有一個應用程式會根據各種演算法將好的UX遞送給使用者。</p>
+<p>這個應用程式稱為RMI (Real-time Merched Impression)，其架構如下。</p>
+<pre><code class="highlight mermaid">graph TD
+    imp[Impression Source] --&gt; kb1[KeyBy] --&gt; join[Join] --&gt; rmi[RMI Sink]
+    pb[Playback Source] --&gt; kb2[KeyBy] --&gt; join</code></pre>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -215,9 +305,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">發表於</span>
-      
 
-      <time title="創建時間：2023-11-29 10:17:05 / 修改時間：10:56:50" itemprop="dateCreated datePublished" datetime="2023-11-29T10:17:05+08:00">2023-11-29</time>
+      <time title="創建時間：2023-11-29 10:17:05" itemprop="dateCreated datePublished" datetime="2023-11-29T10:17:05+08:00">2023-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新於</span>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -315,7 +411,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -409,7 +505,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -506,7 +602,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -605,7 +701,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -702,7 +798,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -805,7 +901,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -904,7 +1000,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1009,7 +1105,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新於</span>
-      <time title="修改時間：2023-11-29 10:56:50" itemprop="dateModified" datetime="2023-11-29T10:56:50+08:00">2023-11-29</time>
+      <time title="修改時間：2024-01-19 10:10:19" itemprop="dateModified" datetime="2024-01-19T10:10:19+08:00">2024-01-19</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1069,8 +1165,8 @@
 
 
 <div class="copyright">
-  &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  &copy; 2023 – 
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-rocket"></i>
   </span>

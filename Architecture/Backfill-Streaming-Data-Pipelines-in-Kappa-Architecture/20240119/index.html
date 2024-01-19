@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="UwHbW2CTRb9hu_gAS_JoTXH5d5V7EK1LW8M3ReqlD9c">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"wirelessr.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.15.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜尋...","empty":"我們無法找到任何有關 ${query} 的搜索結果","hits_time":"${hits} 找到 ${time} 個結果","hits":"找到 ${hits} 個結果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Netflix的首頁是經過客製化的，會根據使用者的喜好有不同的外觀，當然，推薦影片的種類也會完全根據使用者的偏好。要做到這種程度，是因為在系統背後有一個應用程式會根據各種演算法將好的UX遞送給使用者。 這個應用程式稱為RMI (Real-time Merched Impression)，其架構如下。 graph TD     imp[Impression Source] --&gt; kb1[Ke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Netflix如何在Kappa架構下做回填(backfill)">
+<meta property="og:url" content="https://wirelessr.github.io/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/index.html">
+<meta property="og:site_name" content="CT譯站">
+<meta property="og:description" content="Netflix的首頁是經過客製化的，會根據使用者的喜好有不同的外觀，當然，推薦影片的種類也會完全根據使用者的偏好。要做到這種程度，是因為在系統背後有一個應用程式會根據各種演算法將好的UX遞送給使用者。 這個應用程式稱為RMI (Real-time Merched Impression)，其架構如下。 graph TD     imp[Impression Source] --&gt; kb1[Ke">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2024-01-19T02:07:09.000Z">
+<meta property="article:modified_time" content="2024-01-19T02:10:19.602Z">
+<meta property="article:author" content="CT Wu">
+<meta property="article:tag" content="Netflix">
+<meta property="article:tag" content="Data">
+<meta property="article:tag" content="Architecture">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://wirelessr.github.io/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-TW","comments":true,"permalink":"https://wirelessr.github.io/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/","path":"Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/","title":"Netflix如何在Kappa架構下做回填(backfill)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Netflix如何在Kappa架構下做回填(backfill) | CT譯站</title>
+  
+
+
+
+
+  <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "gqdi4dm6in");
+</script>
+
+
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9820460770755862"
+     crossorigin="anonymous"></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">CT譯站</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">各種軟體/架構相關文章的翻譯</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜尋" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>關於</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%82%BA%E4%BB%80%E9%BA%BC%E9%9C%80%E8%A6%81%E5%9B%9E%E5%A1%AB%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">為什麼需要回填？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A2%E6%9C%89%E7%9A%84%E8%A7%A3%E6%B1%BA%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">既有的解決方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%B8%80"><span class="nav-number">2.1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%BA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">方案二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%E4%B8%89"><span class="nav-number">2.3.</span> <span class="nav-text">方案三</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E6%96%B9%E6%A1%88%E6%AF%94%E8%BC%83"><span class="nav-number">2.4.</span> <span class="nav-text">三方案比較</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E8%B3%87%E6%96%99%E6%B9%96%E5%80%89%E5%9C%A8Kappa%E6%9E%B6%E6%A7%8B%E4%B8%8B%E5%81%9A%E5%9B%9E%E5%A1%AB"><span class="nav-number">3.</span> <span class="nav-text">利用資料湖倉在Kappa架構下做回填</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E4%B8%80%EF%BC%9A%E6%A0%B9%E6%93%9A%E5%9B%9E%E5%A1%AB%E6%97%A5%E6%9C%9F%E7%9B%B4%E6%8E%A5%E5%BE%9E%E6%AA%94%E6%A1%88%E8%AE%80%E5%8F%96%E4%BA%8B%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">策略一：根據回填日期直接從檔案讀取事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E4%BA%8C%EF%BC%9A%E5%B0%87%E6%AA%94%E6%A1%88%E6%8E%92%E5%BA%8F%E4%B8%A6%E5%BE%AA%E5%BA%8F%E8%99%95%E7%90%86"><span class="nav-number">3.2.</span> <span class="nav-text">策略二：將檔案排序並循序處理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E4%B8%89%EF%BC%9A%E8%AE%93%E5%AF%A6%E6%99%82%E6%87%89%E7%94%A8%E6%8E%A5%E5%8F%97%E4%BA%8B%E4%BB%B6%E5%BB%B6%E9%81%B2"><span class="nav-number">3.3.</span> <span class="nav-text">策略三：讓實時應用接受事件延遲</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kappa%E6%9E%B6%E6%A7%8B%E7%9A%84%E5%9B%9E%E5%A1%AB"><span class="nav-number">4.</span> <span class="nav-text">Kappa架構的回填</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">5.</span> <span class="nav-text">Conclusion</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CT Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/wirelessr" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;wirelessr" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          Links
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://medium.com/@lazypro" title="https:&#x2F;&#x2F;medium.com&#x2F;@lazypro" rel="noopener" target="_blank">Medium</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://ithelp.ithome.com.tw/users/20146414/ironman" title="https:&#x2F;&#x2F;ithelp.ithome.com.tw&#x2F;users&#x2F;20146414&#x2F;ironman" rel="noopener" target="_blank">iThome</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="https://wirelessr.github.io/Architecture/Backfill-Streaming-Data-Pipelines-in-Kappa-Architecture/20240119/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CT Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Netflix如何在Kappa架構下做回填(backfill) | CT譯站">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Netflix如何在Kappa架構下做回填(backfill)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">發表於</span>
+      
+
+      <time title="創建時間：2024-01-19 10:07:09 / 修改時間：10:10:19" itemprop="dateCreated datePublished" datetime="2024-01-19T10:07:09+08:00">2024-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分類於</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="閱讀次數" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">閱讀次數：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Netflix的首頁是經過客製化的，會根據使用者的喜好有不同的外觀，當然，推薦影片的種類也會完全根據使用者的偏好。要做到這種程度，是因為在系統背後有一個應用程式會根據各種演算法將好的UX遞送給使用者。</p>
+<p>這個應用程式稱為RMI (Real-time Merched Impression)，其架構如下。</p>
+<pre><code class="highlight mermaid">graph TD
+    imp[Impression Source] --&gt; kb1[KeyBy] --&gt; join[Join] --&gt; rmi[RMI Sink]
+    pb[Playback Source] --&gt; kb2[KeyBy] --&gt; join</code></pre>
+
+<span id="more"></span>
+
+<p>這是一個實時串流(real-time streaming)的Flink應用，他會將播放事件和觸及事件即時結合並產生準實時的首頁推送。這背後會經過許多機器學習演算法、資料分析以及A&#x2F;B測試等機制，最後產生結果。</p>
+<p>這個RMI也是Netflix內數一數二大的有狀態Flink應用。</p>
+<h1 id="為什麼需要回填？"><a href="#為什麼需要回填？" class="headerlink" title="為什麼需要回填？"></a>為什麼需要回填？</h1><p>一個串流應用可能會因為諸多原因而掛點。</p>
+<ul>
+<li>上下游失效，也就是無法存取上下游的資料存儲。</li>
+<li>依賴服務失效，這會造成要往下游寫入的資料無法經過豐富化(enrich)。</li>
+<li>上游資料改變，我相信這是身為資料工程師最大的痛點。</li>
+</ul>
+<p>發生以上種種原因就會需要做資料回填。</p>
+<p>而回填有以下幾種類型。</p>
+<ul>
+<li>修正錯誤資料</li>
+<li>回填缺失資料</li>
+<li>重新建立狀態</li>
+</ul>
+<h1 id="既有的解決方案"><a href="#既有的解決方案" class="headerlink" title="既有的解決方案"></a>既有的解決方案</h1><p>那麼要如何做回填？有以下三種方法。</p>
+<h2 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h2><p>最簡單的回填做法就是讓串流應用重新跑一次問題區間的所有事件。</p>
+<p>聽起來很簡單對吧？但這有點不現實，因為資料留存的時間是有限的。也許你會說，我們可以加長資料留存的時間，但這樣會造成中間件(Kafka, Pulsar, etc.)的硬體成本大幅增加。</p>
+<p>此外，留存這些原始事件的效益很差，因為在中間件停留的資料格式大多是純文字型態，頂多是Apache Avro的datum。這些壓縮率都比不上一些列式存儲格式，例如Parquet。</p>
+<p>而且，中間件的存儲媒介是SSD，這也遠比一些物件存儲系統例如S3等高了不少。若是將Netflix所有應用的事件都延長至30天，那麼一年需要額外支出$93M。</p>
+<p>那麼，可以把這些原始事件存到別的地方嗎？答案是肯定的，這也是Netflix自研的<a target="_blank" rel="noopener" href="https://netflixtechblog.com/keystone-real-time-stream-processing-platform-a3ee651812a">Keystone</a>的價值。</p>
+<p>Keystone是Netflix自研的一個資料繞送平台，透過簡單的設定就可以讓Kafka內的事件去到任何想去的地方，可以是另一個Kafka的topic，可以是某一個資料庫，或者是資料湖倉(Data lakehouse)。</p>
+<p>什麼是資料湖倉？</p>
+<p>在上一篇<a href="https://wirelessr.github.io/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/#%E8%A7%A3%E6%B3%95%EF%BC%9APsyberg">一文看懂 Netflix 處理 hourly pipeline 延遲</a>中有快介紹了一下，簡單的說就是在物件存儲上(例如S3)提供可以做SQL操作的能力。</p>
+<p>那資料湖倉有什麼優勢？</p>
+<p>首先，資料可以用壓縮率較佳的存儲格式，例如Parquet，以大幅減少存儲成本。此外，資料湖倉還提供許多額外功能。</p>
+<ul>
+<li>資料剪枝(pruning)，這可以極大的提升讀取效能。</li>
+<li>Schema演化。為了應付上游不斷的資料改變，下游要能夠有對應的schea修改才行。</li>
+<li>無額外的依賴套件，提供所有資料應用都能夠讀寫原始事件的能力，這點尤其重要。</li>
+</ul>
+<p>舉例來說。</p>
+<p>假設我們在Kafka的播放事件如下。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;account_id&quot;</span><span class="punctuation">:</span> <span class="number">123</span><span class="punctuation">,</span> <span class="attr">&quot;show_id&quot;</span><span class="punctuation">:</span> <span class="number">123</span><span class="punctuation">,</span> <span class="attr">&quot;view_duration_sec&quot;</span><span class="punctuation">:</span> <span class="number">123</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;account_id&quot;</span><span class="punctuation">:</span> <span class="number">456</span><span class="punctuation">,</span> <span class="attr">&quot;show_id&quot;</span><span class="punctuation">:</span> <span class="number">456</span><span class="punctuation">,</span> <span class="attr">&quot;view_duration_sec&quot;</span><span class="punctuation">:</span> <span class="number">456</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;account_id&quot;</span><span class="punctuation">:</span> <span class="number">789</span><span class="punctuation">,</span> <span class="attr">&quot;show_id&quot;</span><span class="punctuation">:</span> <span class="number">789</span><span class="punctuation">,</span> <span class="attr">&quot;view_duration_sec&quot;</span><span class="punctuation">:</span> <span class="number">789</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>那麼在資料湖倉就會建立對應的資料表。</p>
+<table>
+<thead>
+<tr>
+<th>account_id</th>
+<th>show_id</th>
+<th>view_duration</th>
+<th><strong>metadata</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>123</td>
+<td>123</td>
+<td>123</td>
+<td>{kafka_ingestion_ts:…}</td>
+</tr>
+<tr>
+<td>456</td>
+<td>456</td>
+<td>456</td>
+<td>{kafka_ingestion_ts:…}</td>
+</tr>
+<tr>
+<td>789</td>
+<td>789</td>
+<td>789</td>
+<td>{kafka_ingestion_ts:…}</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody></table>
+<p>這樣看起來，我們已經在資料湖倉有完整的事件資料，我們可以直接拿這些來做回填嗎？絕對可以，事實上這的確是解決方案的一部分。</p>
+<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>建立一個批次處理的應用，例如Spark，讓他有和實時應用一樣的能力，只是是從資料湖倉讀取資料而不是從Kafka。</p>
+<p>這其實就是一個Lambda架構，整個架構圖如下。</p>
+<pre><code class="highlight mermaid">graph LR
+    kafka[[Kafka]] --&gt; flink[Flink App: prod] --&gt; out[Output]
+    kafka -.-&gt; lake[(Lakehouse)] --&gt; spark[Spark App: backfill] --&gt; out</code></pre>
+
+<p>透過另一個批次應用來做回填的確可行，但這樣的方案有顯著的維護成本，任何修改都必須同步修改兩邊的應用。除此之外，因為涉及兩個應用，所以如何進行資料驗證也是一大挑戰。</p>
+<p>而這些也都是Lambda架構天生的缺陷。</p>
+<h2 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h2><p>既然額外造一個批次應用會有顯著的維護成本，那何不做一個批流合一的應用？</p>
+<p>的確，有些框架的確有支援批流合一個能力，例如：Apache Flink和Apache Beam。</p>
+<p>但無論哪一個框架，都有他的限制。</p>
+<ul>
+<li>Apache Flink：雖然有批流合一的能力，但實際要用批次模式運行還是需要修改一部分的程式碼。</li>
+<li>Apache Beam：Beam也有批流合一的能力，但對於串流應用的一些重要特性僅有部分支援，例如狀態和流水號(watermark)。</li>
+</ul>
+<h2 id="三方案比較"><a href="#三方案比較" class="headerlink" title="三方案比較"></a>三方案比較</h2><p>| | 重播事件 | 批次應用 | 批流合一 |<br>|作法|用既有的實時應用搭配事件重播|做一個等價的批次應用|使用批流合一框架|<br>|Pros|沒有額外開發成本|資料湖倉有低廉的儲存成本|同一個應用卻支援批模式|<br>|Cons|儲存成本非常昂貴|顯著的維護成本|還是需要修改程式|</p>
+<p>既然三個既有方案都還是有缺點，那我們可以合併三者的優點產生一個新的方案嗎？</p>
+<p>當然可以，也就是標題寫到的「在Kappa架構下做回填」。</p>
+<h1 id="利用資料湖倉在Kappa架構下做回填"><a href="#利用資料湖倉在Kappa架構下做回填" class="headerlink" title="利用資料湖倉在Kappa架構下做回填"></a>利用資料湖倉在Kappa架構下做回填</h1><p>這個新的解決方案有三個目標。</p>
+<ol>
+<li>提供一個可以套用在各種場景的<strong>通用解決方案</strong></li>
+<li>盡可能<strong>減少程式碼修改</strong></li>
+<li>具備<strong>水平擴展</strong>能力以提升回填效能</li>
+</ol>
+<p>以下是一個概覽。</p>
+<pre><code class="highlight mermaid">graph LR
+    kafka[[Kafka]] --&gt; flink[Flink App] --&gt; sink[(Sink)]
+    lake[(Lakehouse)] --&gt; flink</code></pre>
+
+<p>這個實時應用可以同時支援Kafka串流資料源(更好的資料新鮮度)以及資料湖倉(更高的吞吐量)。</p>
+<p>在處理邏輯時，新資料以Kafka資料為主，而舊資料則從資料湖倉擷取。當在回填時，統一由資料湖倉作為資料源。</p>
+<p>儘管如此，這樣的解法依然有數種實作方式。</p>
+<h2 id="策略一：根據回填日期直接從檔案讀取事件"><a href="#策略一：根據回填日期直接從檔案讀取事件" class="headerlink" title="策略一：根據回填日期直接從檔案讀取事件"></a>策略一：根據回填日期直接從檔案讀取事件</h2><p>在事件送入資料湖倉時會根據時間建立分區(partition)，並且將相同分區的事件共同儲存在一個檔案，也因此檔案路徑上有時間標示且單一檔案會包含對應時間內的所有事件。那麼當要做回填時，就可以根據需要回填的時間區間直接找出對應的檔案並直接利用這些事件進行回填。</p>
+<p>之所以要將相同分區的事件儲存在一個共同檔案有兩個目的。</p>
+<ol>
+<li>一個檔案內放多個事件會有較佳的壓縮率</li>
+<li>可以避免單一事件檔案產生的檔案破碎化</li>
+</ol>
+<p>當在做回填時，只要找出所有需要回填的檔案就可以使用Flink的分流算子(Split Reader)平行處理。最理想的情況是每一個檔案都可以分配到一個算子。</p>
+<p>這種作法的優勢顯而易見。</p>
+<ol>
+<li>容易水平擴展，只要增加算子就可以平行加速。</li>
+<li>實作簡單</li>
+</ol>
+<p>儘管如此，若是回填操作需要依賴其他的數據源，這樣的做法就會很難實作，因此這個做法的適用性會有些問題。</p>
+<p>除此之外，這樣的架構有一個明顯的挑戰，那就是要如何解決事件的順序性？</p>
+<blockquote>
+<p>當算子都是平行處理，就無法確保事件的先後，那麼對於有順序性的運算就會產生錯誤的結果。</p>
+</blockquote>
+<h2 id="策略二：將檔案排序並循序處理"><a href="#策略二：將檔案排序並循序處理" class="headerlink" title="策略二：將檔案排序並循序處理"></a>策略二：將檔案排序並循序處理</h2><p>既然策略一會碰到事件順序性的問題，那麼只要協調算子確保能夠循序讀取檔案，就能夠解決順序問題。</p>
+<p>確實這樣就可以解決事件順序造成的影響，但這做法卻犧牲掉水平擴展能力。</p>
+<p>即便可以解決順序性，但這樣的代價過於龐大，而且不是所有的實時應用都依賴強順序保證。</p>
+<p>對於實時應用來說，通常只需要確保「事件時間(Event Time)」的語意完整性即可。所謂的事件時間指的是事件發生的時間，而不是事件到達的時間。因為事件有可能會延遲到達，所以實時應用能容許一定延遲。</p>
+<h2 id="策略三：讓實時應用接受事件延遲"><a href="#策略三：讓實時應用接受事件延遲" class="headerlink" title="策略三：讓實時應用接受事件延遲"></a>策略三：讓實時應用接受事件延遲</h2><p>這個實作的方法是策略二的強化版，既然不需要確保強順序性，那麼就可以允許某種程度的平行回填。</p>
+<p>假設，某個實時應用允許十分鐘的延遲事件，那也就是說，我們可以讓十分鐘內的算子一起運行。</p>
+<p>只要透過一個流水號(watermark)紀錄已經處理完的時間區間，就可以通知之後的算子開跑。</p>
+<p>舉例來說，在資料湖倉中以五分鐘為一個分區，但因為0-5以及5-10的事件量大，所以切分成兩個檔案。目前湖倉內的檔案共五個如下：</p>
+<ul>
+<li>T&#x3D;0..5</li>
+<li>T&#x3D;0..5</li>
+<li>T&#x3D;5..10</li>
+<li>T&#x3D;5..10</li>
+<li>T&#x3D;10..15</li>
+</ul>
+<p>再假設，總共有三個算子，所以一開始運行的時候可以同時處理</p>
+<ul>
+<li>T&#x3D;0..5</li>
+<li>T&#x3D;0..5</li>
+<li>T&#x3D;5..10</li>
+</ul>
+<p>當前兩個檔案處理完時，就可以更新流水號為5，那麼算子就可以接續處理後面的10-15。</p>
+<p>透過流水號的機制就可以確實記錄處理進度，並協調算子之間的順序。這樣的解法既能兼顧順序性，又有部份水平擴展的能力，能夠盡可能加速回填的效率。</p>
+<p>看起來策略三已經盡可能在兼顧順序的同時提升回填效率了，但還有一個問題沒有解決，當實時應用需要依賴多個數據源又該怎麼辦？</p>
+<p>回到RMI的例子。</p>
+<pre><code class="highlight mermaid">graph TD
+    imp[Impression Source] --&gt; kb1[KeyBy] --&gt; join[Join] --&gt; rmi[RMI Sink]
+    pb[Playback Source] --&gt; kb2[KeyBy] --&gt; join</code></pre>
+
+<blockquote>
+<p>當兩個數據源有明顯的流速差異，那麼個別計算流水號會造成狀態爆炸(state explosion)。</p>
+</blockquote>
+<p>狀態爆炸不只會佔用額外的系統資源，也會導致實時應用的快照緩慢甚至超時。要知道，快照對於實時應用來說是至關重要的，當快照生成失敗，最嚴重可能導致系統崩壞。</p>
+<p>舉個明確例子，假設觸及事件的流速遠大於播放事件，那麼處理觸及事件的算子拼命消化所有的事件，但其實播放事件根本不需要這麼多，這就會造成觸及事件的算子產生大量的多餘狀態。</p>
+<p>解決方案也很單純，既然每個事件源的流速不同，那麼就定義一個全域的流水號來記錄最慢的那個算子流水號，就可以控制所有算子的處理速度。</p>
+<p>繼續沿用之前的例子，假設RMI這個應用可以允許延遲10分鐘，我們定義記錄觸及事件的流水號是W<del>imp</del>，而播放事件的流水號是W<del>pb</del>。此外，還有一個紀錄全域的流水號W<del>g</del>。</p>
+<p>當觸及事件處理完一些檔案後，W<del>imp</del>&#x3D;5，但播放事件還沒結束，這時的W<del>g</del> &#x3D; min(W<del>imp</del>, W<del>pb</del>)，也就是W<del>g</del> &#x3D; 0，那麼觸及事件會被限制住無法繼續處理<code>T &gt; 10</code>的檔案，直到W<del>pb</del>也跟上。</p>
+<p>當W<del>pb</del>跟上後，例如W<del>pb</del>&#x3D;10，那麼這時的W<del>g</del>會是5，因此處理觸及事件的算子就可以繼續下去。</p>
+<p>透過一個全域流水號就可以協調不同算子之間的處理速度就可以顯著避免狀態爆炸。</p>
+<p>有了這些基礎。最終的解法出爐了。</p>
+<h1 id="Kappa架構的回填"><a href="#Kappa架構的回填" class="headerlink" title="Kappa架構的回填"></a>Kappa架構的回填</h1><pre><code class="highlight mermaid">flowchart LR
+    imp_kafka[[Impression Kafka]] --&gt; prod[Production Stack] --&gt; out_kafka[[RMI Out Kafka]] -.-&gt; out_ice[(RMI Out Iceberg)]
+    pb_kafka[[Playback Kafka]] --&gt; prod
+    imp_kafka -.-&gt; imp_ice[(Impression Iceberg)] --&gt; back --&gt; out_kafka
+    pb_kafka -.-&gt; pb_ice[(Playback Iceberg)] --&gt; back[Backfill Stack]
+    subgraph RMI [RMI Flink App]
+        prod
+        back
+    end</code></pre>
+
+<p>首先，RMI這個實時應用接受觸及事件以及播放事件作為資料源。產生結果後送入接收輸出事件的Kafka內。</p>
+<p>在Kafka內的事件都會經由Keystone同步路由到對應的Iceberg資料湖倉。</p>
+<p>至於回填，依然是由RMI這個應用來處理，只是資料源由Kafka改為Iceberg。值得一提的是，即便有分兩個堆疊(棧)，但他們用的依然是同套程式碼。</p>
+<p>以下是一個RMI的程式範例。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PersonlizationStreamApp</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">flinkJob</span></span>(</span><br><span class="line">        <span class="meta">@Source</span>(<span class="string">&quot;impression-source&quot;</span>) impressionSource: <span class="type">SourceBuilder</span>[<span class="type">Record</span>[<span class="type">ImpressionEvent</span>]],</span><br><span class="line">        <span class="meta">@Source</span>(<span class="string">&quot;playback-source&quot;</span>) playbaclSource: <span class="type">SourceBuilder</span>[<span class="type">Record</span>[<span class="type">PlaybackEvent</span>]],</span><br><span class="line">        <span class="meta">@sink</span>(<span class="string">&quot;summary-sink&quot;</span>) summarySink: <span class="type">SinkBuilder</span>[<span class="type">ImpressionPlaySummary</span>]</span><br><span class="line">    ) &#123;...&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">liveImpressionSourceConfigurer</span></span>(): <span class="type">KafkaSourceConfigurer</span>[<span class="type">Record</span>[<span class="type">ImpressionEvent</span>]] = </span><br><span class="line">        <span class="keyword">new</span> <span class="type">KafkaSourceConfigurer</span>(<span class="string">&quot;live-impression-source&quot;</span>, <span class="type">KafkaCirceDeserializer</span>[<span class="type">ImpressionEvent</span>])</span><br><span class="line">        </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backfillImpressionSourceConfigurer</span></span>(): <span class="type">IcebergSourceConfigurer</span>[<span class="type">Record</span>[<span class="type">ImpressionEvent</span>]] =</span><br><span class="line">        <span class="keyword">new</span> <span class="type">IcebergSourceConfigurer</span>(<span class="string">&quot;backfill-impression-source&quot;</span>, <span class="type">Avro</span>.deserializer[<span class="type">ImpressionEvent</span>])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>這是一個Java的範例，但就算不會寫Java也應該看得懂。這裡有兩個重點：</p>
+<ol>
+<li>無論是實時處理或回填，都使用相同的結構：<code>ImpressionEvent</code>，即便資料源分別是Kafka和Iceberg，但資料結構完全相同。</li>
+<li>若是該應用需要支援回填，也只需要寫一個額外的函式提供設定，而其他的程式碼都不需要修改。</li>
+</ol>
+<p>至於設定檔也有類似的特性。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nfflink:</span></span><br><span class="line">    <span class="attr">job.name:</span> <span class="string">rmi-app</span></span><br><span class="line">    <span class="attr">connectors:</span></span><br><span class="line">        <span class="attr">sources:</span></span><br><span class="line">            <span class="attr">impression-source:</span></span><br><span class="line">                <span class="attr">type:</span> <span class="string">dynamic</span></span><br><span class="line">                <span class="attr">selected:</span> <span class="string">live-impression-source</span></span><br><span class="line">                <span class="attr">candidates:</span></span><br><span class="line">                    <span class="bullet">-</span> <span class="string">live-impression-source</span></span><br><span class="line">                    <span class="bullet">-</span> <span class="string">backfill-impression-source</span></span><br><span class="line">            <span class="attr">live-impression-source:</span></span><br><span class="line">                <span class="attr">type:</span> <span class="string">kafka</span></span><br><span class="line">                <span class="attr">topics:</span> <span class="string">impressions</span></span><br><span class="line">                <span class="attr">cluster:</span> <span class="string">impressions_cluster</span></span><br><span class="line">            <span class="attr">backfill-impression-source:</span></span><br><span class="line">                <span class="attr">type:</span> <span class="string">iceberg</span></span><br><span class="line">                <span class="attr">database:</span> <span class="string">default</span></span><br><span class="line">                <span class="attr">table:</span> <span class="string">impression_table_name</span></span><br><span class="line">                <span class="attr">max_misalignment_thresold:</span> <span class="string">10min</span></span><br></pre></td></tr></table></figure>
+
+<p>在設定檔內只需要提供需要回填的資訊即可，其中<code>max_misalignment_thresold</code>這項指的就是前面提到可以容許的最大延遲。</p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>透過這樣的架構，Netflix確實取得了不錯的成效。</p>
+<ul>
+<li>容易建置回填功能</li>
+<li>高吞吐量：處理一整天的資料只需要約五小時。</li>
+<li>因為程式碼不需要修改，所以回填的資料一致性可以做到99.9%。</li>
+<li>透過Iceberg來取代Kafka，讓原本需要$93M&#x2F;y的成本縮減成$2M&#x2F;y。</li>
+</ul>
+<p>資料一致性之所以是99.9%而不是100%是因為回填的時間線和實時事件不同，回填可能因為一些去重的算法或是時間戳的處理而導致資料與實時處理不一致。但對於Netflix來說，這個0.1%的損失完全可以接受。</p>
+<p>從建制這個架構中，Netflix也了解到每個實時應用對於回填都有不一樣的需求，例如容許延遲、吞吐量或上述提到的一致性等，這些都與實時應用在處理及時事件是不太一樣。</p>
+<p>因此對於回填的算子來說，也會需要有個別的微調，例如設定、運算資源(CPU或記憶體)等，不能統一都用實時應用的參數。</p>
+<hr>
+<p>本文翻譯自DATA+AI SUMMIT 2022的 <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=aCIWI5k7deM">Backfill Streaming Data Pipelines in Kappa Architecture</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+    <!-- related posts -->
+        <h2>相關文章推薦</h2>
+        <ul class="popular-posts">
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/" rel="bookmark">一文看懂Netflix處理hourly pipeline延遲</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/HTAP-learning-from-Xiaohongshu/20230505/" rel="bookmark">HTAP：從小紅書的案例學習NewSQL</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Uber-Achieves-Excellence-Data-Quality/20230526/" rel="bookmark">Uber如何做到傑出的資料品質</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Elasticsearch/Boosting-Elasticsearch-Cluster-Performance/20230512/" rel="bookmark">有效提昇Elasticsearch整座集群效能的三個小技巧</a></div>
+            </li>
+            <li class="popular-posts-item">
+            <div class="popular-posts-title"><a href="/Architecture/How-Shopify-Black-Friday-Cyber-Monday/20230421/" rel="bookmark">Shopify如何處理大促？</a></div>
+            </li>
+        </ul>
+
+          <div class="post-tags">
+              <a href="/tags/Netflix/" rel="tag"># Netflix</a>
+              <a href="/tags/Data/" rel="tag"># Data</a>
+              <a href="/tags/Architecture/" rel="tag"># Architecture</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/Architecture/How-Netflix-Handle-Hourly-Pipeline-Delay/20231129/" rel="prev" title="一文看懂Netflix處理hourly pipeline延遲">
+                  <i class="fa fa-chevron-left"></i> 一文看懂Netflix處理hourly pipeline延遲
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2023 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CT Wu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="訪客總數">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="總瀏覽次數">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="回到頂端">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.4.3/mermaid.min.js","integrity":"sha256-e0o3JYsdjqKajf9eOe22FhioYSz9WofRY4dLKo3F6do="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"wirelessr/wirelessr.github.io","issue_term":"title","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
